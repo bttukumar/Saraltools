@@ -1,4 +1,4 @@
-  <!doctype html>
+<!doctype html>
 <html lang="en-IN">
 <head>
 <meta charset="utf-8">
@@ -334,7 +334,7 @@ select.in{appearance:auto}
     <div id="navList"></div>
     <div class="navfoot">
       <button class="linkbtn" id="themeBtn" type="button">Switch theme</button>
-      <p>The website is developed by Bittu and designed by LR AWM  CONTACT Me here at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
+      <p>The website is developed by Bittu and designed by LR AWM CONNECT WITH ME  at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
     </div>
   </nav>
   <div class="scrim" id="scrim"></div>
@@ -1538,7 +1538,7 @@ function renderPdf(el) {
       await LIBS.pdfjs();
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const f = s.files[0];
-      const loadingTask = pdfjsLib.getDocument({ data: f.bytes });
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(f.bytes) });
       const pdf = await loadingTask.promise;
       let bodyXml = '';
 
@@ -1714,7 +1714,7 @@ function renderPdf(el) {
 }
 
 /* 10. PDF Audio Reader */
-const pdfReaderState = { file: null, bytes: null, fullText: '', totalPages: 0, speed: 1.0, isPlaying: false, isPaused: false, statusText: 'Choose a PDF file to begin listening.' };
+const pdfReaderState = { file: null, bytes: null, fullText: '', pageTexts: [], totalPages: 0, speed: 1.0, startPage: 1, isPlaying: false, isPaused: false, statusText: 'Choose a PDF file to begin listening.' };
 
 function renderPdfReader(el) {
   const s = pdfReaderState;
@@ -1730,6 +1730,9 @@ function renderPdfReader(el) {
     '<option value="1.5"' + (s.speed === 1.5 ? ' selected' : '') + '>1.5x</option>' +
     '<option value="2"' + (s.speed === 2 ? ' selected' : '') + '>2.0x</option>' +
     '</select></label>' +
+    '<label class="lbl"><span>Start from page</span>' +
+    '<input class="in" type="number" id="pr_startpage" min="1" max="' + (s.totalPages || 1) + '" value="' + s.startPage + '" style="width:110px"' + (!s.file ? ' disabled' : '') + '>' +
+    '</label>' +
     '</div>' +
     '<div class="btnrow">' +
     '<button class="btn" id="pr_play"' + (!s.file ? ' disabled' : '') + '>Play</button>' +
@@ -1741,7 +1744,8 @@ function renderPdfReader(el) {
 
   const dropBox = $('#pr_drop', el);
   dropBox.innerHTML = dropHTML('.pdf,application/pdf', false, 'Choose a PDF to listen to', 'or drag and drop it here') +
-    (s.file ? '<ul class="files" style="margin-top:14px"><li><span class="nm">' + esc(s.file.name) + '</span><span class="mt">' + s.totalPages + ' pages, ' + bytesFmt(s.file.size) + '</span><button class="ib" id="pr_rm" aria-label="Remove">\u2715</button></li></ul>' : '');
+    (s.file ? '<ul class="files" style="margin-top:14px"><li><span class="nm">' + esc(s.file.name) + '</span><span class="mt">' + s.totalPages + ' pages, ' + bytesFmt(s.file.size) + '</span><button class="ib" id="pr_rm" aria-label="Remove">\u2715</button></li></ul>' +
+    '<div style="margin-top:16px"><strong class="small muted" style="display:block;margin-bottom:8px">PDF Preview (Page 1)</strong><canvas id="pr_canvas" style="max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff;display:block;"></canvas></div>' : '');
 
   bindDrop(dropBox, function (files) {
     if (files && files[0]) loadFile(files[0]);
@@ -1755,6 +1759,16 @@ function renderPdfReader(el) {
     }
   };
 
+  const startPageInput = $('#pr_startpage', el);
+  if (startPageInput) {
+    startPageInput.oninput = function (e) {
+      const p = parseInt(e.target.value, 10);
+      if (!isNaN(p) && p >= 1 && p <= s.totalPages) {
+        s.startPage = p;
+      }
+    };
+  }
+
   const rmBtn = $('#pr_rm', dropBox);
   if (rmBtn) {
     rmBtn.onclick = function () {
@@ -1762,7 +1776,9 @@ function renderPdfReader(el) {
       s.file = null;
       s.bytes = null;
       s.fullText = '';
+      s.pageTexts = [];
       s.totalPages = 0;
+      s.startPage = 1;
       s.statusText = 'Choose a PDF file to begin listening.';
       remount(renderPdfReader);
     };
@@ -1802,12 +1818,37 @@ function renderPdfReader(el) {
   cleanups.push(stopAudio);
   updateStatus();
 
+  if (s.file && s.bytes) {
+    renderPreviewCanvas();
+  }
+
   function stopAudio() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     s.isPlaying = false;
     s.isPaused = false;
+  }
+
+  async function renderPreviewCanvas() {
+    try {
+      await LIBS.pdfjs();
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(s.bytes) });
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.0 });
+      const canvas = $('#pr_canvas', el);
+      if (!canvas) return;
+      const context = canvas.getContext('2d');
+      const scale = Math.min(1.5, 400 / viewport.width);
+      const scaledViewport = page.getViewport({ scale: scale });
+      canvas.height = scaledViewport.height;
+      canvas.width = scaledViewport.width;
+      await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+    } catch (err) {
+      console.error('Preview render error:', err);
+    }
   }
 
   async function loadFile(f) {
@@ -1824,15 +1865,18 @@ function renderPdfReader(el) {
       s.bytes = new Uint8Array(await f.arrayBuffer());
       await LIBS.pdfjs();
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      const loadingTask = pdfjsLib.getDocument({ data: s.bytes });
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(s.bytes) });
       const pdf = await loadingTask.promise;
       s.totalPages = pdf.numPages;
+      s.startPage = 1;
+      s.pageTexts = [];
 
       let extracted = '';
       for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const tc = await page.getTextContent();
         const pageText = tc.items.map(function (it) { return it.str; }).join(' ');
+        s.pageTexts[p] = pageText.trim();
         if (pageText.trim()) extracted += pageText + ' ';
       }
 
@@ -1854,18 +1898,34 @@ function renderPdfReader(el) {
       return;
     }
     stopAudio();
-    const utterance = new SpeechSynthesisUtterance(s.fullText);
+    
+    // Assemble text starting from selected page
+    let textToRead = '';
+    const startIdx = Math.max(1, Math.min(s.startPage, s.totalPages));
+    for (let p = startIdx; p <= s.totalPages; p++) {
+      if (s.pageTexts[p]) {
+        textToRead += s.pageTexts[p] + ' ';
+      }
+    }
+    textToRead = textToRead.trim();
+
+    if (!textToRead) {
+      toast('No text found from page ' + startIdx + ' onwards.');
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToRead);
     utterance.rate = s.speed;
     utterance.onstart = function () {
       s.isPlaying = true;
       s.isPaused = false;
-      s.statusText = 'Reading out loud...';
+      s.statusText = 'Reading out loud (from page ' + startIdx + ')...';
       updateStatus();
     };
     utterance.onend = function () {
       s.isPlaying = false;
       s.isPaused = false;
-      s.statusText = 'Finished reading entire document.';
+      s.statusText = 'Finished reading from page ' + startIdx + '.';
       updateStatus();
     };
     utterance.onerror = function () {
@@ -2692,7 +2752,7 @@ const TOOLS = [
 const GROUPS = ['Money', 'Files', 'Everyday', 'Make'];
 let currentId = '';
 
-function renderHome(el) {
+async function renderHome(el) {
   el.innerHTML = '<section class="hero"><h1>Small tools for money, files and everyday work.</h1>' +
     '<p class="lede">' + TOOLS.length + ' tools that run in your browser. Numbers, PDFs and photos never leave your device, and there is nothing to sign up for.</p></section>' +
     '<section class="index" aria-label="All tools">' + GROUPS.map(function (g) {
@@ -2700,7 +2760,29 @@ function renderHome(el) {
         return '<a class="irow" href="#/' + t.id + '"><strong>' + t.name + '</strong><span>' + t.desc + '</span></a>';
       }).join('') + '</div></div>';
     }).join('') + '</section>' +
-    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>LR AWM</b> support us by contributing on <b>upi id</b> bittulrawm@ybl contact to me at  <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
+    '<section class="block" style="margin-top:64px;padding:32px;background:var(--surface);border:1px solid var(--line);border-radius:18px">' +
+    '<h2>Support & Donations</h2>' +
+    '<p class="lede" style="margin-top:8px">If you find Saral helpful, you can support its development via UPI: <a href="upi://pay?pa=bittulrawm@ybl&cu=INR" style="color:var(--accent);font-weight:600;text-decoration:underline">bittulrawm@ybl</a></p>' +
+    '<div style="margin-top:20px;display:inline-grid;place-items:center;background:#fff;padding:16px;border:1px solid var(--line);border-radius:12px" id="home_upi_qr"></div>' +
+    '</section>' +
+    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>LR AWM</b> and connect with me at  <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
+
+  try {
+    await LIBS.qr();
+    const qrContainer = $('#home_upi_qr', el);
+    if (qrContainer) {
+      new QRCode(qrContainer, {
+        text: 'upi://pay?pa=bittulrawm@ybl&cu=INR',
+        width: 180,
+        height: 180,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  } catch (e) {
+    console.error('Could not render UPI QR code', e);
+  }
 }
 
 function buildNav(filter) {
