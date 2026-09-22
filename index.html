@@ -1,4 +1,4 @@
-<!doctype html>
+  <!doctype html>
 <html lang="en-IN">
 <head>
 <meta charset="utf-8">
@@ -334,17 +334,33 @@ select.in{appearance:auto}
     <div id="navList"></div>
     <div class="navfoot">
       <button class="linkbtn" id="themeBtn" type="button">Switch theme</button>
-      <p>The website is developed by Bittu and LR AWM CONNECT with me at   <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
+      <p>The website is developed by Bittu and designed by LR AWM  CONTACT Me here at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
     </div>
   </nav>
   <div class="scrim" id="scrim"></div>
   <main class="main" id="main" tabindex="-1"><noscript>Saral needs JavaScript to run its tools.</noscript></main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script>
-/* ---------- core: pure functions, no DOM ---------- */
 
-/* safe global date helpers */
+<script>
+(function () {
+'use strict';
+
+/* tiny helpers */
+const $ = function (s, r) { return (r || document).querySelector(s); };
+const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+const esc = function (s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+};
+const uid = function () { return Math.random().toString(36).slice(2, 9); };
+const debounce = function (fn, ms) { let t; return function () { const a = arguments; clearTimeout(t); t = setTimeout(function () { fn.apply(null, a); }, ms); }; };
+const clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+const set = function (id, t) { const n = document.getElementById(id); if (n) n.textContent = t; };
+const pad2 = function (n) { return String(n).padStart(2, '0'); };
+const ymd = function (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
+
 function parseDateSafe(s) {
   if (!s) return null;
   if (s instanceof Date) return isNaN(s.getTime()) ? null : s;
@@ -356,6 +372,108 @@ function parseDateSafe(s) {
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
+const parseYmd = function (s) { return parseDateSafe(s); };
+const addDays = function (s, n) { const d = parseDateSafe(s); d.setDate(d.getDate() + n); return ymd(d); };
+const fmtDate = function (s, o) { return parseDateSafe(s).toLocaleDateString('en-IN', o || { weekday: 'long', day: 'numeric', month: 'long' }); };
+
+const inr = function (n) { return '\u20B9' + Math.round(n).toLocaleString('en-IN'); };
+const numIN = function (n, d) { d = d || 0; return Number(n).toLocaleString('en-IN', { minimumFractionDigits: d, maximumFractionDigits: d }); };
+const trim2 = function (x) { return String(Math.round(x * 100) / 100); };
+const words = function (n) {
+  const a = Math.abs(n);
+  if (a >= 1e7) return '\u20B9' + trim2(a / 1e7) + ' crore';
+  if (a >= 1e5) return '\u20B9' + trim2(a / 1e5) + ' lakh';
+  return '';
+};
+const bytesFmt = function (b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(b < 10240 ? 1 : 0) + ' KB';
+  return (b / 1048576).toFixed(2) + ' MB';
+};
+
+/* storage */
+const store = {
+  ok: (function () { try { localStorage.setItem('__saral', '1'); localStorage.removeItem('__saral'); return true; } catch (e) { return false; } })(),
+  mem: {},
+  get: function (k, d) {
+    try {
+      const v = this.ok ? localStorage.getItem('saral:' + k) : this.mem[k];
+      return v == null ? d : JSON.parse(v);
+    } catch (e) { return d; }
+  },
+  set: function (k, v) {
+    const s = JSON.stringify(v);
+    try { if (this.ok) localStorage.setItem('saral:' + k, s); else this.mem[k] = s; } catch (e) { this.mem[k] = s; }
+  }
+};
+
+/* toast, copy, download */
+let toastTimer;
+function toast(m) {
+  const t = $('#toast'); t.textContent = m; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
+}
+function copyText(t) {
+  const fallback = function () {
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) { }
+    ta.remove(); toast(ok ? 'Copied' : 'Could not copy. Select the text and copy it by hand.');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { toast('Copied'); }, fallback);
+  else fallback();
+}
+const downloadsReady = (async function () {
+  try { if (window.claude && typeof window.claude.use === 'function') return await window.claude.use('downloads'); } catch (e) { }
+  return null;
+})();
+async function saveFile(name, data, mime) {
+  const ns = await downloadsReady;
+  if (ns) {
+    try { await ns.save({ filename: name, data: data }); toast('Saved ' + name); }
+    catch (e) { toast('Could not save the file.'); }
+    return;
+  }
+  try {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' });
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000); toast('Saved ' + name);
+  } catch (e) { toast('Could not save the file.'); }
+}
+
+/* lazy libraries */
+const loaded = {};
+function loadScript(key, urls, test) {
+  if (loaded[key]) return loaded[key];
+  const p = (async function () {
+    if (test()) return true;
+    for (let i = 0; i < urls.length; i++) {
+      try {
+        await new Promise(function (res, rej) {
+          const s = document.createElement('script');
+          s.src = urls[i]; s.onload = res; s.onerror = function () { rej(new Error('load')); };
+          document.head.appendChild(s);
+        });
+        if (test()) return true;
+      } catch (e) { }
+    }
+    throw new Error('Could not load helper library. Check your connection.');
+  })();
+  loaded[key] = p; p.catch(function () { delete loaded[key]; });
+  return p;
+}
+const LIBS = {
+  pdf: function () { return loadScript('pdf', ['https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js', 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'], function () { return !!window.PDFLib; }); },
+  pdfjs: function () { return loadScript('pdfjs', ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'], function () { return !!window.pdfjsLib; }); },
+  mammoth: function () { return loadScript('mammoth', ['https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js'], function () { return !!window.mammoth; }); },
+  zip: function () { return loadScript('zip', ['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'], function () { return !!window.JSZip; }); },
+  qr: function () { return loadScript('qr', ['https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'], function () { return typeof window.QRCode === 'function'; }); },
+  bar: function () { return loadScript('bar', ['https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js', 'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js'], function () { return typeof window.JsBarcode === 'function'; }); }
+};
+
+/* Core Math & Pure Logic */
 
 /* EMI */
 function calcEmi(P, rate, months) {
@@ -450,11 +568,11 @@ function calcAgeDetails(dobStr, targetStr) {
   const daysToNext = Math.ceil((nextBday.getTime() - target.getTime()) / 864e5);
 
   const checks = [
-    { name: 'Voting / Adult (18+)', min: 18, max: Infinity, desc: 'Eligible for voter ID, general contracts, and driving license in India.' },
+    { name: 'Voting / Adult (18+)', min: 18, max: Infinity, desc: 'Eligible for voter ID, general legal contracts, and driving license in India.' },
     { name: 'Marriage Legal Age (21+)', min: 21, max: Infinity, desc: 'Eligible marriage age for males (and standard adult legal obligations).' },
-    { name: 'General Govt Job Exam (18 - 32)', min: 18, max: 32, desc: 'Typical age bracket for UPSC CSE, SSC, and general public sector jobs.' },
+    { name: 'General Govt Job Exam (18 - 32)', min: 18, max: 32, desc: 'Standard general age bracket for UPSC CSE, SSC, and public sector services.' },
     { name: 'Armed Forces / NDA (16.5 - 19.5)', min: 16.5, max: 19.5, desc: 'Entry bracket for National Defence Academy / Naval Academy exams.' },
-    { name: 'Senior Citizen Tax Benefit (60+)', min: 60, max: 79, desc: 'Eligible for senior citizen tax slabs, train concessions, and special FD interest.' },
+    { name: 'Senior Citizen Tax Benefit (60+)', min: 60, max: 79, desc: 'Eligible for senior citizen tax slabs, train concessions, and special FD rates.' },
     { name: 'Super Senior Citizen (80+)', min: 80, max: Infinity, desc: 'Special income tax slab benefits and healthcare provisions in India.' }
   ];
 
@@ -665,127 +783,8 @@ function bestStreak(days) {
   keys.forEach(function (k) { cur = prev && dayDiff(prev, k) === 1 ? cur + 1 : 1; best = Math.max(best, cur); prev = k; });
   return best;
 }
-</script>
-<script>
-(function () {
-'use strict';
 
-/* tiny helpers */
-const $ = function (s, r) { return (r || document).querySelector(s); };
-const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-const esc = function (s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-  });
-};
-const uid = function () { return Math.random().toString(36).slice(2, 9); };
-const debounce = function (fn, ms) { let t; return function () { const a = arguments; clearTimeout(t); t = setTimeout(function () { fn.apply(null, a); }, ms); }; };
-const clone = function (o) { return JSON.parse(JSON.stringify(o)); };
-const set = function (id, t) { const n = document.getElementById(id); if (n) n.textContent = t; };
-const pad2 = function (n) { return String(n).padStart(2, '0'); };
-const ymd = function (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
-const parseYmd = function (s) { return parseDateSafe(s); };
-const addDays = function (s, n) { const d = parseDateSafe(s); d.setDate(d.getDate() + n); return ymd(d); };
-const fmtDate = function (s, o) { return parseDateSafe(s).toLocaleDateString('en-IN', o || { weekday: 'long', day: 'numeric', month: 'long' }); };
-
-const inr = function (n) { return '\u20B9' + Math.round(n).toLocaleString('en-IN'); };
-const numIN = function (n, d) { d = d || 0; return Number(n).toLocaleString('en-IN', { minimumFractionDigits: d, maximumFractionDigits: d }); };
-const trim2 = function (x) { return String(Math.round(x * 100) / 100); };
-const words = function (n) {
-  const a = Math.abs(n);
-  if (a >= 1e7) return '\u20B9' + trim2(a / 1e7) + ' crore';
-  if (a >= 1e5) return '\u20B9' + trim2(a / 1e5) + ' lakh';
-  return '';
-};
-const bytesFmt = function (b) {
-  if (b < 1024) return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(b < 10240 ? 1 : 0) + ' KB';
-  return (b / 1048576).toFixed(2) + ' MB';
-};
-
-/* storage */
-const store = {
-  ok: (function () { try { localStorage.setItem('__saral', '1'); localStorage.removeItem('__saral'); return true; } catch (e) { return false; } })(),
-  mem: {},
-  get: function (k, d) {
-    try {
-      const v = this.ok ? localStorage.getItem('saral:' + k) : this.mem[k];
-      return v == null ? d : JSON.parse(v);
-    } catch (e) { return d; }
-  },
-  set: function (k, v) {
-    const s = JSON.stringify(v);
-    try { if (this.ok) localStorage.setItem('saral:' + k, s); else this.mem[k] = s; } catch (e) { this.mem[k] = s; }
-  }
-};
-
-/* toast, copy, download */
-let toastTimer;
-function toast(m) {
-  const t = $('#toast'); t.textContent = m; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
-}
-function copyText(t) {
-  const fallback = function () {
-    const ta = document.createElement('textarea');
-    ta.value = t; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
-    document.body.appendChild(ta); ta.select();
-    let ok = false; try { ok = document.execCommand('copy'); } catch (e) { }
-    ta.remove(); toast(ok ? 'Copied' : 'Could not copy. Select the text and copy it by hand.');
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { toast('Copied'); }, fallback);
-  else fallback();
-}
-const downloadsReady = (async function () {
-  try { if (window.claude && typeof window.claude.use === 'function') return await window.claude.use('downloads'); } catch (e) { }
-  return null;
-})();
-async function saveFile(name, data, mime) {
-  const ns = await downloadsReady;
-  if (ns) {
-    try { await ns.save({ filename: name, data: data }); toast('Saved ' + name); }
-    catch (e) { toast('Could not save the file.'); }
-    return;
-  }
-  try {
-    const blob = data instanceof Blob ? data : new Blob([data], { type: mime || 'application/octet-stream' });
-    const url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 5000); toast('Saved ' + name);
-  } catch (e) { toast('Could not save the file.'); }
-}
-
-/* lazy libraries */
-const loaded = {};
-function loadScript(key, urls, test) {
-  if (loaded[key]) return loaded[key];
-  const p = (async function () {
-    if (test()) return true;
-    for (let i = 0; i < urls.length; i++) {
-      try {
-        await new Promise(function (res, rej) {
-          const s = document.createElement('script');
-          s.src = urls[i]; s.onload = res; s.onerror = function () { rej(new Error('load')); };
-          document.head.appendChild(s);
-        });
-        if (test()) return true;
-      } catch (e) { }
-    }
-    throw new Error('Could not load helper library. Check your connection.');
-  })();
-  loaded[key] = p; p.catch(function () { delete loaded[key]; });
-  return p;
-}
-const LIBS = {
-  pdf: function () { return loadScript('pdf', ['https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js', 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'], function () { return !!window.PDFLib; }); },
-  pdfjs: function () { return loadScript('pdfjs', ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'], function () { return !!window.pdfjsLib; }); },
-  mammoth: function () { return loadScript('mammoth', ['https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js'], function () { return !!window.mammoth; }); },
-  zip: function () { return loadScript('zip', ['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'], function () { return !!window.JSZip; }); },
-  qr: function () { return loadScript('qr', ['https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'], function () { return typeof window.QRCode === 'function'; }); },
-  bar: function () { return loadScript('bar', ['https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js', 'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js'], function () { return typeof window.JsBarcode === 'function'; }); }
-};
-
-/* UI pieces */
+/* UI helpers */
 const head = function (t, d) { return '<header class="thead"><a class="crumb" href="#/">All tools</a><h1>' + t + '</h1><p class="lede">' + d + '</p></header>'; };
 
 function fmtField(v, fmt) {
@@ -922,7 +921,9 @@ function remount(fn) {
   $('#main').replaceChildren(r); fn(r);
 }
 
-/* =============== EMI =============== */
+/* =============== Tool Renderers =============== */
+
+/* 1. EMI */
 const emiState = { amount: 5000000, rate: 8.5, tenure: 20, unit: 'years' };
 function renderEmi(el) {
   const s = emiState, yrs = s.unit === 'years';
@@ -970,7 +971,7 @@ function renderEmi(el) {
   update();
 }
 
-/* =============== SIP =============== */
+/* 2. SIP */
 const sipState = { monthly: 10000, rate: 12, years: 15, step: 0, infl: 6 };
 function renderSip(el) {
   const s = sipState;
@@ -1001,7 +1002,7 @@ function renderSip(el) {
   update();
 }
 
-/* =============== CAGR =============== */
+/* 3. CAGR */
 const cagrState = { initial: 100000, final: 250000, years: 5 };
 function renderCagr(el) {
   const s = cagrState;
@@ -1033,7 +1034,7 @@ function renderCagr(el) {
   update();
 }
 
-/* =============== Age & Eligibility =============== */
+/* 4. Age & Eligibility */
 const ageState = { dob: '1998-05-15', asOf: ymd(new Date()) };
 function renderAge(el) {
   const s = ageState;
@@ -1085,7 +1086,7 @@ function renderAge(el) {
   update();
 }
 
-/* =============== Income tax =============== */
+/* 5. Income Tax */
 const taxState = { income: 1500000, other: 0, age: 'u60', sal: 'yes', c80: 150000, d80: 25000, nps: 0, homeLoan: 0, hraBasic: 0, hraRecv: 0, rent: 0, metro: 'yes', otherDed: 0 };
 function renderTax(el) {
   const s = taxState;
@@ -1134,7 +1135,7 @@ function renderTax(el) {
   update();
 }
 
-/* =============== Retirement =============== */
+/* 6. Retirement */
 const retState = { age: 30, retAge: 60, life: 85, expense: 50000, infl: 6, pre: 12, post: 8, saved: 500000 };
 function renderRetire(el) {
   const s = retState;
@@ -1170,7 +1171,7 @@ function renderRetire(el) {
   update();
 }
 
-/* =============== BMI =============== */
+/* 7. BMI */
 const bmiState = { unit: 'metric', heightCm: 172, weightKg: 68, ft: 5, inch: 8, lbs: 150 };
 function renderBmi(el) {
   const s = bmiState;
@@ -1221,7 +1222,7 @@ function renderBmi(el) {
   update();
 }
 
-/* =============== AUTOMATIC GRAPH & PIE CHART TOOL =============== */
+/* 8. Graph & Pie Chart */
 const chartState = {
   type: 'pie',
   title: 'Monthly Expenses',
@@ -1397,7 +1398,7 @@ function renderChartMaker(el) {
   drawPreview();
 }
 
-/* =============== PDF toolkit =============== */
+/* 9. PDF Toolkit */
 const pdfState = { mode: 'merge', files: [], range: '1-2', action: 'keep', imgSize: 'a4', margin: true, busy: false, wordDoc: null };
 const baseName = function (n) { return String(n).replace(/\.[^.]+$/, ''); };
 
@@ -1462,9 +1463,8 @@ function renderPdf(el) {
       opts = '<p class="note">Extracts text and page layout directly from your PDF into an editable Microsoft Word document (.docx).</p>';
       act = '<button class="btn" data-a="p2w"' + (!f || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Converting\u2026' : 'Convert to Word (.docx)') + '</button>';
     } else if (m === 'word2pdf') {
-      const f = s.wordDoc;
       opts = '<p class="note">Converts text and paragraphs from your Word document (.docx) directly into a standardized PDF file.</p>';
-      act = '<button class="btn" data-a="w2p"' + (!f || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Converting\u2026' : 'Convert to PDF') + '</button>';
+      act = '<button class="btn" data-a="w2p"' + (!s.wordDoc || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Converting\u2026' : 'Convert to PDF') + '</button>';
     }
 
     const accept = isImg ? 'image/*' : m === 'word2pdf' ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf,.pdf';
@@ -1713,7 +1713,186 @@ function renderPdf(el) {
   }
 }
 
-/* =============== Image toolkit =============== */
+/* 10. PDF Audio Reader */
+const pdfReaderState = { file: null, bytes: null, fullText: '', totalPages: 0, speed: 1.0, isPlaying: false, isPaused: false, statusText: 'Choose a PDF file to begin listening.' };
+
+function renderPdfReader(el) {
+  const s = pdfReaderState;
+  el.innerHTML = head('PDF audio reader', 'Listen to your PDF documents out loud. Reads text directly in your browser using speech synthesis with no server uploads.') +
+    '<div class="calc"><div class="inputs">' +
+    '<div id="pr_drop"></div>' +
+    '<div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center">' +
+    '<label class="lbl"><span>Reading speed</span>' +
+    '<select class="in" id="pr_speed" style="width:130px">' +
+    '<option value="0.75"' + (s.speed === 0.75 ? ' selected' : '') + '>0.75x</option>' +
+    '<option value="1"' + (s.speed === 1 ? ' selected' : '') + '>1.0x (Normal)</option>' +
+    '<option value="1.25"' + (s.speed === 1.25 ? ' selected' : '') + '>1.25x</option>' +
+    '<option value="1.5"' + (s.speed === 1.5 ? ' selected' : '') + '>1.5x</option>' +
+    '<option value="2"' + (s.speed === 2 ? ' selected' : '') + '>2.0x</option>' +
+    '</select></label>' +
+    '</div>' +
+    '<div class="btnrow">' +
+    '<button class="btn" id="pr_play"' + (!s.file ? ' disabled' : '') + '>Play</button>' +
+    '<button class="btn ghost" id="pr_pause"' + (!s.file ? ' disabled' : '') + '>Pause</button>' +
+    '<button class="btn ghost" id="pr_stop"' + (!s.file ? ' disabled' : '') + '>Stop</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="panel stick" id="pr_out" aria-live="polite"></div></div>';
+
+  const dropBox = $('#pr_drop', el);
+  dropBox.innerHTML = dropHTML('.pdf,application/pdf', false, 'Choose a PDF to listen to', 'or drag and drop it here') +
+    (s.file ? '<ul class="files" style="margin-top:14px"><li><span class="nm">' + esc(s.file.name) + '</span><span class="mt">' + s.totalPages + ' pages, ' + bytesFmt(s.file.size) + '</span><button class="ib" id="pr_rm" aria-label="Remove">\u2715</button></li></ul>' : '');
+
+  bindDrop(dropBox, function (files) {
+    if (files && files[0]) loadFile(files[0]);
+  });
+
+  const speedSelect = $('#pr_speed', el);
+  speedSelect.onchange = function (e) {
+    s.speed = parseFloat(e.target.value) || 1.0;
+    if (s.isPlaying && !s.isPaused) {
+      startSpeech();
+    }
+  };
+
+  const rmBtn = $('#pr_rm', dropBox);
+  if (rmBtn) {
+    rmBtn.onclick = function () {
+      stopAudio();
+      s.file = null;
+      s.bytes = null;
+      s.fullText = '';
+      s.totalPages = 0;
+      s.statusText = 'Choose a PDF file to begin listening.';
+      remount(renderPdfReader);
+    };
+  }
+
+  $('#pr_play', el).onclick = function () {
+    if (!('speechSynthesis' in window)) {
+      toast('Text-to-speech is not supported in this browser.');
+      return;
+    }
+    if (window.speechSynthesis.paused && s.isPaused) {
+      window.speechSynthesis.resume();
+      s.isPaused = false;
+      s.isPlaying = true;
+      s.statusText = 'Playing audio...';
+      updateStatus();
+      return;
+    }
+    startSpeech();
+  };
+
+  $('#pr_pause', el).onclick = function () {
+    if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause();
+      s.isPaused = true;
+      s.statusText = 'Audio paused.';
+      updateStatus();
+    }
+  };
+
+  $('#pr_stop', el).onclick = function () {
+    stopAudio();
+    s.statusText = 'Audio stopped.';
+    updateStatus();
+  };
+
+  cleanups.push(stopAudio);
+  updateStatus();
+
+  function stopAudio() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    s.isPlaying = false;
+    s.isPaused = false;
+  }
+
+  async function loadFile(f) {
+    if (!/\.pdf$/i.test(f.name) && f.type !== 'application/pdf') {
+      toast('Please select a valid PDF file.');
+      return;
+    }
+    stopAudio();
+    s.file = f;
+    s.statusText = 'Extracting text from PDF...';
+    updateStatus();
+
+    try {
+      s.bytes = new Uint8Array(await f.arrayBuffer());
+      await LIBS.pdfjs();
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const loadingTask = pdfjsLib.getDocument({ data: s.bytes });
+      const pdf = await loadingTask.promise;
+      s.totalPages = pdf.numPages;
+
+      let extracted = '';
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        const pageText = tc.items.map(function (it) { return it.str; }).join(' ');
+        if (pageText.trim()) extracted += pageText + ' ';
+      }
+
+      s.fullText = extracted.trim();
+      if (!s.fullText) {
+        s.statusText = 'No selectable text could be extracted from this PDF (it may be a scanned image).';
+      } else {
+        s.statusText = 'Ready to play (' + s.totalPages + ' pages loaded).';
+      }
+    } catch (err) {
+      s.statusText = 'Could not read text: ' + (err.message || 'Unknown error');
+    }
+    remount(renderPdfReader);
+  }
+
+  function startSpeech() {
+    if (!s.fullText) {
+      toast('No extracted text available to read.');
+      return;
+    }
+    stopAudio();
+    const utterance = new SpeechSynthesisUtterance(s.fullText);
+    utterance.rate = s.speed;
+    utterance.onstart = function () {
+      s.isPlaying = true;
+      s.isPaused = false;
+      s.statusText = 'Reading out loud...';
+      updateStatus();
+    };
+    utterance.onend = function () {
+      s.isPlaying = false;
+      s.isPaused = false;
+      s.statusText = 'Finished reading entire document.';
+      updateStatus();
+    };
+    utterance.onerror = function () {
+      s.isPlaying = false;
+      s.isPaused = false;
+      s.statusText = 'Audio playback stopped or interrupted.';
+      updateStatus();
+    };
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function updateStatus() {
+    const out = $('#pr_out', el);
+    if (!out) return;
+    const wordsCount = s.fullText ? s.fullText.split(/\s+/).filter(Boolean).length : 0;
+    out.innerHTML = '<div class="muted">Audio Player Status</div>' +
+      '<div class="words" style="margin-top:12px;font-size:1.05rem;color:var(--ink)"><b>' + esc(s.statusText) + '</b></div>' +
+      '<div style="margin-top:20px">' +
+      '<div class="row"><span>File loaded</span><b>' + (s.file ? esc(s.file.name) : 'None') + '</b></div>' +
+      '<div class="row"><span>Total pages</span><b>' + s.totalPages + '</b></div>' +
+      '<div class="row"><span>Extracted words</span><b>' + wordsCount.toLocaleString('en-IN') + '</b></div>' +
+      '<div class="row"><span>Reading speed</span><b>' + s.speed + 'x</b></div>' +
+      '</div>';
+  }
+}
+
+/* 11. Image Toolkit */
 const imgState = { file: null, img: null, url: null, w: 0, h: 0, outW: 0, outH: 0, lock: true, fmt: 'image/jpeg', quality: 80, useTarget: false, targetKB: 100, tok: 0, blob: null, outUrl: null, outExt: 'jpg' };
 function renderImage(el) {
   const s = imgState;
@@ -1821,7 +2000,7 @@ function renderImage(el) {
   }
 }
 
-/* =============== Converter =============== */
+/* 12. Converter */
 const RATE_DATE = '20 Sep 2026';
 const RATE_DEFAULTS = { USD: 96.0, EUR: 110.43, GBP: 128.4, AED: 26.14, SAR: 25.6, SGD: 75.42, CAD: 68.76, AUD: 68.4, CHF: 116.7, JPY: 0.617 };
 const CUR_NAMES = { INR: 'Indian rupee', USD: 'US dollar', EUR: 'Euro', GBP: 'British pound', AED: 'UAE dirham', SAR: 'Saudi riyal', SGD: 'Singapore dollar', CAD: 'Canadian dollar', AUD: 'Australian dollar', CHF: 'Swiss franc', JPY: 'Japanese yen' };
@@ -1899,7 +2078,7 @@ function renderConv(el) {
   }
 }
 
-/* =============== Planner =============== */
+/* 13. Planner */
 const plan = (function () { const p = store.get('planner', null); return p && p.tasks ? p : { tasks: {}, habits: [], journal: {} }; })();
 const savePlan = debounce(function () { store.set('planner', plan); }, 300);
 const planUI = { tab: 'today', date: ymd(new Date()) };
@@ -2011,7 +2190,7 @@ function renderPlanner(el) {
   }
 }
 
-/* =============== Password =============== */
+/* 14. Password */
 const pwState = { len: 16, upper: true, lower: true, digits: true, symbols: true, noAmb: false, out: '' };
 function randInt(max) {
   const lim = Math.floor(0x100000000 / max) * max, a = new Uint32Array(1); let x;
@@ -2063,7 +2242,7 @@ function renderPassword(el) {
   gen();
 }
 
-/* =============== Resume (Preview name: Laxmi) =============== */
+/* 15. Resume Builder */
 const R_SAMPLE = {
   tpl: 'accent', name: 'Laxmi', title: 'Product designer', email: 'laxmi@example.com', phone: '+91 98765 43210', location: 'Bengaluru, India', links: 'linkedin.com/in/laxmi',
   summary: 'Product designer with six years of experience shipping consumer apps used by millions. I work best where research, design and engineering share one table.',
@@ -2212,7 +2391,7 @@ function renderResume(el) {
   requestAnimationFrame(function () { fitPaper(wrap); });
 }
 
-/* =============== Invoice =============== */
+/* 16. Invoice Generator */
 const invDefault = function () {
   return {
     taxMode: 'split', no: 'INV-001', date: ymd(new Date()), due: addDays(ymd(new Date()), 15),
@@ -2355,7 +2534,7 @@ function renderInvoice(el) {
   requestAnimationFrame(function () { fitPaper(wrap); });
 }
 
-/* =============== QR and barcode =============== */
+/* 17. QR and Barcode */
 const qrState = {
   tab: 'qr',
   type: 'text',
@@ -2490,7 +2669,7 @@ function renderQr(el) {
   }
 }
 
-/* =============== Registry, home, routing =============== */
+/* =============== Registry, Navigation, Routing =============== */
 const TOOLS = [
   { id: 'emi', group: 'Money', name: 'EMI calculator', desc: 'Monthly instalment, total interest and schedule for any loan.', keys: 'loan home car personal mortgage interest', render: renderEmi },
   { id: 'sip', group: 'Money', name: 'SIP calculator', desc: 'What a monthly investment could grow to, with yearly step-up.', keys: 'mutual fund invest wealth compounding', render: renderSip },
@@ -2500,6 +2679,7 @@ const TOOLS = [
   { id: 'age', group: 'Everyday', name: 'Age & eligibility', desc: 'Exact age breakdown with government, exam, and legal eligibility.', keys: 'age birthday eligibility exam upsc nda voting senior citizen', render: renderAge },
   { id: 'bmi', group: 'Everyday', name: 'BMI calculator', desc: 'Calculate Body Mass Index and check healthy weight ranges.', keys: 'health weight fitness body mass index', render: renderBmi },
   { id: 'pdf', group: 'Files', name: 'PDF toolkit', desc: 'Merge, split, extract pages, convert PDF to Word, Word to PDF and turn images into a PDF.', keys: 'merge split combine pages images document word docx convert', render: renderPdf },
+  { id: 'pdf-reader', group: 'Files', name: 'PDF audio reader', desc: 'Listen to any PDF document read out loud in your browser.', keys: 'pdf audio reader listen speech tts voice read book document', render: renderPdfReader },
   { id: 'image', group: 'Files', name: 'Image toolkit', desc: 'Resize, compress and convert photos, or fit a size limit.', keys: 'photo jpg png webp compress resize kb', render: renderImage },
   { id: 'converter', group: 'Everyday', name: 'Converter', desc: 'Units, area, weight and currencies.', keys: 'unit length weight area currency dollar tola acre', render: renderConv },
   { id: 'planner', group: 'Everyday', name: 'Planner', desc: 'Daily tasks, habit streaks and a private journal.', keys: 'todo habit tracker diary notes', render: renderPlanner },
@@ -2520,7 +2700,7 @@ function renderHome(el) {
         return '<a class="irow" href="#/' + t.id + '"><strong>' + t.name + '</strong><span>' + t.desc + '</span></a>';
       }).join('') + '</div></div>';
     }).join('') + '</section>' +
-    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>LR AWM</b> my email to contact  <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
+    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>LR AWM</b> contact to me at  <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
 }
 
 function buildNav(filter) {
