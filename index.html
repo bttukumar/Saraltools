@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Saral | Small tools for money, files and everyday work</title>
-<meta name="description" content="EMI, SIP, income tax, BMI, chart maker, PDF and image tools, converters, resume and invoice makers. Everything runs in your browser.">
+<meta name="description" content="EMI, SIP, CAGR, age calculator, income tax, BMI, chart maker, PDF and image tools, converters, resume and invoice makers. Everything runs in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&display=swap" rel="stylesheet">
@@ -334,7 +334,7 @@ select.in{appearance:auto}
     <div id="navList"></div>
     <div class="navfoot">
       <button class="linkbtn" id="themeBtn" type="button">Switch theme</button>
-      <p>The website is developed by B2 and LR AWM  TO CONNECT email me at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
+      <p>The website is developed by Bittu and LR AWM CONNECT with me at   <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
     </div>
   </nav>
   <div class="scrim" id="scrim"></div>
@@ -343,6 +343,19 @@ select.in{appearance:auto}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 /* ---------- core: pure functions, no DOM ---------- */
+
+/* safe global date helpers */
+function parseDateSafe(s) {
+  if (!s) return null;
+  if (s instanceof Date) return isNaN(s.getTime()) ? null : s;
+  const p = String(s).split('-').map(Number);
+  if (p.length === 3 && !isNaN(p[0]) && !isNaN(p[1]) && !isNaN(p[2])) {
+    const d = new Date(p[0], p[1] - 1, p[2]);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
 
 /* EMI */
 function calcEmi(P, rate, months) {
@@ -388,6 +401,70 @@ function calcSip(P, rate, years, step, infl) {
     contrib *= 1 + step / 100;
   }
   return { inv: inv, value: bal, gain: bal - inv, real: bal / Math.pow(1 + infl / 100, years), yrs: yrs };
+}
+
+/* CAGR */
+function calcCagr(initial, final, years) {
+  if (initial <= 0 || final <= 0 || years <= 0) return { cagr: 0, absolute: 0, totalGain: 0, yrs: [] };
+  const cagr = (Math.pow(final / initial, 1 / years) - 1) * 100;
+  const absolute = ((final - initial) / initial) * 100;
+  const totalGain = final - initial;
+  const yrs = [];
+  for (let y = 1; y <= Math.round(years); y++) {
+    const val = initial * Math.pow(1 + cagr / 100, y);
+    yrs.push({ label: 'Y' + y, a: initial, b: Math.max(0, val - initial) });
+  }
+  return { cagr: cagr, absolute: absolute, totalGain: totalGain, yrs: yrs };
+}
+
+/* Age & Eligibility */
+function calcAgeDetails(dobStr, targetStr) {
+  if (!dobStr) return null;
+  const dob = parseDateSafe(dobStr);
+  const target = targetStr ? parseDateSafe(targetStr) : new Date();
+  if (!dob || !target || isNaN(dob.getTime()) || isNaN(target.getTime()) || dob > target) return null;
+
+  let y = target.getFullYear() - dob.getFullYear();
+  let m = target.getMonth() - dob.getMonth();
+  let d = target.getDate() - dob.getDate();
+
+  if (d < 0) {
+    m--;
+    const prevMonthDays = new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+    d += prevMonthDays;
+  }
+  if (m < 0) {
+    y--;
+    m += 12;
+  }
+
+  const diffTime = target.getTime() - dob.getTime();
+  const totalDays = Math.floor(diffTime / 864e5);
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = y * 12 + m;
+
+  let nextBday = new Date(target.getFullYear(), dob.getMonth(), dob.getDate());
+  if (nextBday < target) {
+    nextBday = new Date(target.getFullYear() + 1, dob.getMonth(), dob.getDate());
+  }
+  const daysToNext = Math.ceil((nextBday.getTime() - target.getTime()) / 864e5);
+
+  const checks = [
+    { name: 'Voting / Adult (18+)', min: 18, max: Infinity, desc: 'Eligible for voter ID, general contracts, and driving license in India.' },
+    { name: 'Marriage Legal Age (21+)', min: 21, max: Infinity, desc: 'Eligible marriage age for males (and standard adult legal obligations).' },
+    { name: 'General Govt Job Exam (18 - 32)', min: 18, max: 32, desc: 'Typical age bracket for UPSC CSE, SSC, and general public sector jobs.' },
+    { name: 'Armed Forces / NDA (16.5 - 19.5)', min: 16.5, max: 19.5, desc: 'Entry bracket for National Defence Academy / Naval Academy exams.' },
+    { name: 'Senior Citizen Tax Benefit (60+)', min: 60, max: 79, desc: 'Eligible for senior citizen tax slabs, train concessions, and special FD interest.' },
+    { name: 'Super Senior Citizen (80+)', min: 80, max: Infinity, desc: 'Special income tax slab benefits and healthcare provisions in India.' }
+  ];
+
+  const decimalAge = y + (m / 12) + (d / 365);
+  const eligibilities = checks.map(function (c) {
+    const ok = decimalAge >= c.min && decimalAge <= c.max;
+    return { name: c.name, ok: ok, desc: c.desc, range: (c.max === Infinity ? c.min + '+ years' : c.min + ' - ' + c.max + ' years') };
+  });
+
+  return { y: y, m: m, d: d, totalDays: totalDays, totalWeeks: totalWeeks, totalMonths: totalMonths, daysToNext: daysToNext, eligibilities: eligibilities };
 }
 
 /* Income tax */
@@ -607,9 +684,9 @@ const clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 const set = function (id, t) { const n = document.getElementById(id); if (n) n.textContent = t; };
 const pad2 = function (n) { return String(n).padStart(2, '0'); };
 const ymd = function (d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
-const parseYmd = function (s) { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
-const addDays = function (s, n) { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
-const fmtDate = function (s, o) { return parseYmd(s).toLocaleDateString('en-IN', o || { weekday: 'long', day: 'numeric', month: 'long' }); };
+const parseYmd = function (s) { return parseDateSafe(s); };
+const addDays = function (s, n) { const d = parseDateSafe(s); d.setDate(d.getDate() + n); return ymd(d); };
+const fmtDate = function (s, o) { return parseDateSafe(s).toLocaleDateString('en-IN', o || { weekday: 'long', day: 'numeric', month: 'long' }); };
 
 const inr = function (n) { return '\u20B9' + Math.round(n).toLocaleString('en-IN'); };
 const numIN = function (n, d) { d = d || 0; return Number(n).toLocaleString('en-IN', { minimumFractionDigits: d, maximumFractionDigits: d }); };
@@ -701,6 +778,8 @@ function loadScript(key, urls, test) {
 }
 const LIBS = {
   pdf: function () { return loadScript('pdf', ['https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js', 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'], function () { return !!window.PDFLib; }); },
+  pdfjs: function () { return loadScript('pdfjs', ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'], function () { return !!window.pdfjsLib; }); },
+  mammoth: function () { return loadScript('mammoth', ['https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js', 'https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js'], function () { return !!window.mammoth; }); },
   zip: function () { return loadScript('zip', ['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'], function () { return !!window.JSZip; }); },
   qr: function () { return loadScript('qr', ['https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'], function () { return typeof window.QRCode === 'function'; }); },
   bar: function () { return loadScript('bar', ['https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js', 'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js'], function () { return typeof window.JsBarcode === 'function'; }); }
@@ -919,6 +998,90 @@ function renderSip(el) {
       return { label: y.label, a: y.a, b: y.b, tip: 'Year ' + (i + 1) + ': invested ' + inr(y.a) + ', returns ' + inr(y.b) };
     }), 'Invested amount and returns at the end of each year');
   }
+  update();
+}
+
+/* =============== CAGR =============== */
+const cagrState = { initial: 100000, final: 250000, years: 5 };
+function renderCagr(el) {
+  const s = cagrState;
+  el.innerHTML = head('CAGR calculator', 'Calculate Compound Annual Growth Rate (CAGR) and absolute returns for your mutual funds, stocks, or investments.') +
+    '<div class="calc"><div class="inputs">' +
+    fieldHTML({ key: 'initial', label: 'Initial investment value', prefix: '\u20B9', min: 1000, max: 10000000, step: 5000, value: s.initial, fmt: 'inr' }) +
+    fieldHTML({ key: 'final', label: 'Final investment value', prefix: '\u20B9', min: 1000, max: 50000000, step: 5000, value: s.final, fmt: 'inr' }) +
+    fieldHTML({ key: 'years', label: 'Duration / Period', suffix: 'years', min: 1, max: 30, step: 0.5, value: s.years }) +
+    '</div><div class="panel" aria-live="polite">' +
+    '<div class="muted">Compound Annual Growth Rate</div><div class="big" id="cagr_pct"></div><div class="words" id="cagr_note"></div>' +
+    '<div class="split"><span class="a" id="cagr_sa"></span><span class="b" id="cagr_sb"></span></div>' +
+    rowHTML('a', 'Initial investment', 'cagr_init') + rowHTML('b', 'Total gain', 'cagr_gain') + rowHTML('', 'Absolute return', 'cagr_abs') +
+    '</div></div>' +
+    '<section class="block"><h2>Compounded progression</h2><div id="cagr_chart"></div><div class="legend"><span><i class="sw a"></i>Base</span><span><i class="sw b"></i>Gain</span></div></section>';
+  bindFields(el, s, update);
+  function update() {
+    const c = calcCagr(s.initial, s.final, s.years);
+    set('cagr_pct', c.cagr.toFixed(2) + '%');
+    set('cagr_note', (c.cagr >= 0 ? 'Annualized growth' : 'Annualized decline') + ' over ' + s.years + ' years');
+    const pp = s.final > 0 ? Math.min(100, Math.max(0, s.initial / s.final * 100)) : 0;
+    $('#cagr_sa').style.width = pp + '%'; $('#cagr_sb').style.width = (100 - pp) + '%';
+    set('cagr_init', inr(s.initial)); set('cagr_gain', inr(c.totalGain)); set('cagr_abs', c.absolute.toFixed(2) + '%');
+    if (c.yrs.length) {
+      $('#cagr_chart', el).innerHTML = stackedBars(c.yrs.map(function (y, idx) {
+        return { label: y.label, a: y.a, b: y.b, tip: 'Year ' + (idx + 1) + ': value ' + inr(y.a + y.b) };
+      }), 'Year-by-year compounding asset value');
+    }
+  }
+  update();
+}
+
+/* =============== Age & Eligibility =============== */
+const ageState = { dob: '1998-05-15', asOf: ymd(new Date()) };
+function renderAge(el) {
+  const s = ageState;
+  el.innerHTML = head('Age calculator & eligibility', 'Find exact age in years, months and days, view milestone countdowns, and check standard institutional and exam age criteria.') +
+    '<div class="calc"><div class="inputs">' +
+    '<div class="frow">' +
+    '<label class="lbl"><span>Date of birth</span><input class="in" type="date" id="age_dob" value="' + esc(s.dob) + '"></label>' +
+    '<label class="lbl"><span>Age as of date</span><input class="in" type="date" id="age_asof" value="' + esc(s.asOf) + '"></label>' +
+    '</div>' +
+    '<div class="chips" style="margin-top:14px"><button class="chip" id="age_today_btn" type="button">Reset to today</button></div>' +
+    '<section class="block" style="margin-top:28px"><h2>Eligibility checks</h2>' +
+    '<div id="age_elig_list"></div></section>' +
+    '</div><div class="panel stick" id="age_res" aria-live="polite"></div></div>';
+
+  $('#age_dob', el).onchange = function (e) { s.dob = e.target.value; update(); };
+  $('#age_asof', el).onchange = function (e) { s.asOf = e.target.value; update(); };
+  $('#age_today_btn', el).onclick = function () {
+    s.asOf = ymd(new Date());
+    $('#age_asof', el).value = s.asOf;
+    update();
+  };
+
+  function update() {
+    const res = calcAgeDetails(s.dob, s.asOf);
+    const rEl = $('#age_res', el), eList = $('#age_elig_list', el);
+    if (!res) {
+      rEl.innerHTML = '<div class="muted">Check dates</div><div class="words err">Please ensure date of birth is selected and does not exceed the target date.</div>';
+      eList.innerHTML = '<p class="muted small">Enter valid dates to calculate eligibility status.</p>';
+      return;
+    }
+    rEl.innerHTML = '<div class="muted">Age on selected date</div>' +
+      '<div class="big">' + res.y + ' <span style="font-size:1.6rem;font-weight:400">years</span></div>' +
+      '<div class="words">' + res.m + ' months, ' + res.d + ' days</div>' +
+      '<div class="row"><span>Total months lived</span><b>' + res.totalMonths.toLocaleString('en-IN') + '</b></div>' +
+      '<div class="row"><span>Total weeks</span><b>' + res.totalWeeks.toLocaleString('en-IN') + '</b></div>' +
+      '<div class="row"><span>Total days</span><b>' + res.totalDays.toLocaleString('en-IN') + '</b></div>' +
+      '<div class="row"><span>Next birthday in</span><b>' + res.daysToNext + ' days</b></div>';
+
+    eList.innerHTML = res.eligibilities.map(function (item) {
+      return '<div class="row" style="padding:14px 0">' +
+        '<div style="flex:1;min-width:0">' +
+        '<b>' + esc(item.name) + '</b><br><small class="muted">' + esc(item.desc) + ' (' + item.range + ')</small>' +
+        '</div>' +
+        '<span class="badge" style="background:' + (item.ok ? 'var(--ok)' : 'var(--bad)') + ';color:#fff;margin-left:12px">' +
+        (item.ok ? '\u2713 Eligible' : '\u2715 Not eligible') + '</span></div>';
+    }).join('');
+  }
+
   update();
 }
 
@@ -1235,7 +1398,7 @@ function renderChartMaker(el) {
 }
 
 /* =============== PDF toolkit =============== */
-const pdfState = { mode: 'merge', files: [], range: '1-2', action: 'keep', imgSize: 'a4', margin: true, busy: false };
+const pdfState = { mode: 'merge', files: [], range: '1-2', action: 'keep', imgSize: 'a4', margin: true, busy: false, wordDoc: null };
 const baseName = function (n) { return String(n).replace(/\.[^.]+$/, ''); };
 
 function readImageEl(file) {
@@ -1257,21 +1420,29 @@ async function rasterToPng(file) {
 
 function renderPdf(el) {
   const s = pdfState;
-  el.innerHTML = head('PDF toolkit', 'Merge PDFs, pull out or remove pages, split a file into single pages, or turn images into a PDF. Your files never leave this device.') +
-    seg('mode', [['merge', 'Merge'], ['extract', 'Pages'], ['images', 'Images to PDF']], s.mode) + '<div id="pbody" style="margin-top:26px;max-width:720px"></div>';
+  el.innerHTML = head('PDF toolkit', 'Merge PDFs, pull out or remove pages, split files, turn images into PDF, or convert between Word (.docx) and PDF. Everything runs right in your browser.') +
+    seg('mode', [['merge', 'Merge'], ['extract', 'Pages'], ['images', 'Images to PDF'], ['pdf2word', 'PDF to Word'], ['word2pdf', 'Word to PDF']], s.mode) + '<div id="pbody" style="margin-top:26px;max-width:720px"></div>';
   onSeg(el, 'mode', function (v) { s.mode = v; clearPdfFiles(); draw(); });
   draw();
 
-  function clearPdfFiles() { s.files.forEach(function (f) { if (f.url) URL.revokeObjectURL(f.url); }); s.files = []; }
+  function clearPdfFiles() {
+    s.files.forEach(function (f) { if (f.url) URL.revokeObjectURL(f.url); });
+    s.files = [];
+    s.wordDoc = null;
+  }
   cleanups.push(clearPdfFiles);
 
   function draw() {
-    const b = $('#pbody', el), m = s.mode, isImg = m === 'images', multi = m !== 'extract';
+    const b = $('#pbody', el), m = s.mode, isImg = m === 'images';
+    const isConv = (m === 'pdf2word' || m === 'word2pdf');
+    const multi = m !== 'extract' && !isConv;
+
     const list = s.files.map(function (f, i) {
       return '<li>' + (isImg ? '<img src="' + f.url + '" alt="">' : '') + '<span class="nm">' + esc(f.name) + '</span><span class="mt">' + (f.pages ? f.pages + (f.pages === 1 ? ' page' : ' pages') + ', ' : '') + bytesFmt(f.size) + '</span>' +
         (multi ? '<button class="ib" data-a="up" data-i="' + i + '" aria-label="Move up"' + (i === 0 ? ' disabled' : '') + '>\u2191</button><button class="ib" data-a="down" data-i="' + i + '" aria-label="Move down"' + (i === s.files.length - 1 ? ' disabled' : '') + '>\u2193</button>' : '') +
         '<button class="ib" data-a="rm" data-i="' + i + '" aria-label="Remove ' + esc(f.name) + '">\u2715</button></li>';
     }).join('');
+
     let opts = '', act = '';
     if (m === 'merge') {
       act = '<button class="btn" data-a="go"' + (s.files.length < 2 || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Working\u2026' : 'Merge into one PDF') + '</button>';
@@ -1282,30 +1453,45 @@ function renderPdf(el) {
         seg('action', [['keep', 'Keep these pages'], ['remove', 'Remove these pages']], s.action) : '';
       act = '<button class="btn" data-a="go"' + (!f || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Working\u2026' : 'Save new PDF') + '</button>' +
         '<button class="btn ghost" data-a="split"' + (!f || s.busy ? ' disabled' : '') + '>Split into single pages (.zip)</button>';
-    } else {
+    } else if (m === 'images') {
       opts = '<div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:16px;align-items:center">' + seg('isize', [['a4', 'A4 pages'], ['fit', 'Match image size']], s.imgSize) +
         (s.imgSize === 'a4' ? '<label class="chk-l"><input type="checkbox" id="mg"' + (s.margin ? ' checked' : '') + '>Add margins</label>' : '') + '</div>';
       act = '<button class="btn" data-a="go"' + (!s.files.length || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Working\u2026' : 'Create PDF') + '</button>';
+    } else if (m === 'pdf2word') {
+      const f = s.files[0];
+      opts = '<p class="note">Extracts text and page layout directly from your PDF into an editable Microsoft Word document (.docx).</p>';
+      act = '<button class="btn" data-a="p2w"' + (!f || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Converting\u2026' : 'Convert to Word (.docx)') + '</button>';
+    } else if (m === 'word2pdf') {
+      const f = s.wordDoc;
+      opts = '<p class="note">Converts text and paragraphs from your Word document (.docx) directly into a standardized PDF file.</p>';
+      act = '<button class="btn" data-a="w2p"' + (!f || s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Converting\u2026' : 'Convert to PDF') + '</button>';
     }
-    const accept = isImg ? 'image/*' : 'application/pdf,.pdf';
-    const title = m === 'merge' ? 'Choose PDFs to merge' : m === 'extract' ? 'Choose a PDF' : 'Choose images';
+
+    const accept = isImg ? 'image/*' : m === 'word2pdf' ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf,.pdf';
+    const title = m === 'merge' ? 'Choose PDFs to merge' : m === 'extract' ? 'Choose a PDF' : m === 'pdf2word' ? 'Choose a PDF to convert' : m === 'word2pdf' ? 'Choose a Word document (.docx)' : 'Choose images';
+    const fileListHtml = m === 'word2pdf' ? (s.wordDoc ? '<ul class="files"><li><span class="nm">' + esc(s.wordDoc.name) + '</span><span class="mt">' + bytesFmt(s.wordDoc.size) + '</span><button class="ib" data-a="rmw" aria-label="Remove">\u2715</button></li></ul>' : '') : (s.files.length ? '<ul class="files">' + list + '</ul>' : '');
+
     b.innerHTML = dropHTML(accept, multi, title, 'or drop ' + (multi ? 'them' : 'it') + ' here') +
-      (s.files.length ? '<ul class="files">' + list + '</ul>' : '') + opts + '<div class="btnrow">' + act + '</div>';
+      fileListHtml + opts + '<div class="btnrow">' + act + '</div>';
     bindDrop(b, addFiles);
     b.onclick = function (e) {
       const t = e.target.closest('[data-a]'); if (!t) return;
       const a = t.dataset.a, i = +t.dataset.i;
       if (a === 'rm') { const f = s.files.splice(i, 1)[0]; if (f && f.url) URL.revokeObjectURL(f.url); draw(); }
+      else if (a === 'rmw') { s.wordDoc = null; draw(); }
       else if (a === 'up' && i > 0) { s.files.splice(i - 1, 0, s.files.splice(i, 1)[0]); draw(); }
       else if (a === 'down' && i < s.files.length - 1) { s.files.splice(i + 1, 0, s.files.splice(i, 1)[0]); draw(); }
       else if (a === 'go') run(false);
       else if (a === 'split') run(true);
+      else if (a === 'p2w') convertPdfToWord();
+      else if (a === 'w2p') convertWordToPdf();
     };
     b.onchange = function (e) { if (e.target.id === 'mg') s.margin = e.target.checked; };
     b.oninput = function (e) { if (e.target.id === 'rg') s.range = e.target.value; };
     onSegOnce(b, 'action', function (v) { s.action = v; });
     onSegOnce(b, 'isize', function (v) { s.imgSize = v; draw(); });
   }
+
   function onSegOnce(root, name, cb) {
     $$('.seg[data-seg="' + name + '"] button', root).forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1314,10 +1500,18 @@ function renderPdf(el) {
       });
     });
   }
+
   async function addFiles(files) {
     try {
+      if (s.mode === 'word2pdf') {
+        const f = files[0];
+        if (!/\.docx$/i.test(f.name)) { toast('Please choose a .docx Word document.'); return; }
+        s.wordDoc = f;
+        draw();
+        return;
+      }
       await LIBS.pdf();
-      if (s.mode === 'extract') { clearPdfFiles(); files = files.slice(0, 1); }
+      if (s.mode === 'extract' || s.mode === 'pdf2word') { clearPdfFiles(); files = files.slice(0, 1); }
       for (let k = 0; k < files.length; k++) {
         const f = files[k];
         if (s.mode === 'images') {
@@ -1335,6 +1529,129 @@ function renderPdf(el) {
     } catch (e) { toast(e.message); }
     draw();
   }
+
+  async function convertPdfToWord() {
+    if (s.busy || !s.files[0]) return;
+    s.busy = true; draw();
+    try {
+      await LIBS.zip();
+      await LIBS.pdfjs();
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const f = s.files[0];
+      const loadingTask = pdfjsLib.getDocument({ data: f.bytes });
+      const pdf = await loadingTask.promise;
+      let bodyXml = '';
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        let lastY = null, lineText = '';
+
+        for (let i = 0; i < textContent.items.length; i++) {
+          const item = textContent.items[i];
+          const curY = Math.round(item.transform[5]);
+          if (lastY !== null && Math.abs(curY - lastY) > 6) {
+            if (lineText.trim()) {
+              bodyXml += '<w:p><w:r><w:t xml:space="preserve">' + esc(lineText) + '</w:t></w:r></w:p>';
+            }
+            lineText = '';
+          }
+          lineText += (lineText ? ' ' : '') + item.str;
+          lastY = curY;
+        }
+        if (lineText.trim()) {
+          bodyXml += '<w:p><w:r><w:t xml:space="preserve">' + esc(lineText) + '</w:t></w:r></w:p>';
+        }
+        if (pageNum < pdf.numPages) {
+          bodyXml += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+        }
+      }
+      if (!bodyXml) {
+        bodyXml = '<w:p><w:r><w:t>(No extractable text found in this PDF)</w:t></w:r></w:p>';
+      }
+
+      const zip = new JSZip();
+      zip.file('[Content_Types].xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+        '<Default Extension="xml" ContentType="application/xml"/>' +
+        '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+        '</Types>'
+      );
+      zip.file('_rels/.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+        '</Relationships>'
+      );
+      zip.file('word/_rels/document.xml.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>'
+      );
+      zip.file('word/document.xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+        '<w:body>' + bodyXml + '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/></w:sectPr></w:body></w:document>'
+      );
+
+      const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      await saveFile(baseName(f.name) + '.docx', blob, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    } catch (err) {
+      toast('Could not convert PDF to Word. ' + (err.message || ''));
+    }
+    s.busy = false; draw();
+  }
+
+  async function convertWordToPdf() {
+    if (s.busy || !s.wordDoc) return;
+    s.busy = true; draw();
+    try {
+      await LIBS.mammoth();
+      await LIBS.pdf();
+      const ab = await s.wordDoc.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: ab });
+      const raw = result.value || '';
+      const paragraphs = raw.split(/\r?\n\r?\n/).map(function (p) { return p.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+
+      const PL = PDFLib;
+      const doc = await PL.PDFDocument.create();
+      const font = await doc.embedFont(PL.StandardFonts.Helvetica);
+      const W = 595.28, H = 841.89, M = 54, CW = W - 2 * M, size = 11, lineLead = 16, paraLead = 12;
+      let page = doc.addPage([W, H]), y = H - M;
+
+      const lines = [];
+      paragraphs.forEach(function (para) {
+        const words = sanitizePdf(para).split(' ');
+        let cur = '';
+        words.forEach(function (wd) {
+          const test = cur ? cur + ' ' + wd : wd;
+          if (cur && font.widthOfTextAtSize(test, size) > CW) {
+            lines.push(cur); cur = wd;
+          } else cur = test;
+        });
+        if (cur) lines.push(cur);
+        lines.push(null);
+      });
+
+      lines.forEach(function (ln) {
+        if (ln === null) { y -= paraLead; return; }
+        if (y - lineLead < M) { page = doc.addPage([W, H]); y = H - M; }
+        page.drawText(ln, { x: M, y: y, size: size, font: font, color: PL.rgb(0.08, 0.09, 0.15) });
+        y -= lineLead;
+      });
+
+      if (!paragraphs.length) {
+        page.drawText('(Blank Word document)', { x: M, y: y, size: size, font: font, color: PL.rgb(0.4, 0.4, 0.4) });
+      }
+
+      await saveFile(baseName(s.wordDoc.name) + '.pdf', await doc.save(), 'application/pdf');
+    } catch (err) {
+      toast('Could not convert Word to PDF. ' + (err.message || ''));
+    }
+    s.busy = false; draw();
+  }
+
   async function run(split) {
     if (s.busy) return;
     s.busy = true; draw();
@@ -2177,10 +2494,12 @@ function renderQr(el) {
 const TOOLS = [
   { id: 'emi', group: 'Money', name: 'EMI calculator', desc: 'Monthly instalment, total interest and schedule for any loan.', keys: 'loan home car personal mortgage interest', render: renderEmi },
   { id: 'sip', group: 'Money', name: 'SIP calculator', desc: 'What a monthly investment could grow to, with yearly step-up.', keys: 'mutual fund invest wealth compounding', render: renderSip },
+  { id: 'cagr', group: 'Money', name: 'CAGR calculator', desc: 'Compounded annual growth rate and absolute return for investments.', keys: 'cagr return compound annual growth wealth investment rate', render: renderCagr },
   { id: 'income-tax', group: 'Money', name: 'Income tax', desc: 'New and old regime side by side for FY 2026-27.', keys: 'tax regime salary hra 80c itr', render: renderTax },
   { id: 'retirement', group: 'Money', name: 'Retirement', desc: 'The corpus you need and the monthly saving to reach it.', keys: 'pension corpus fire nps', render: renderRetire },
+  { id: 'age', group: 'Everyday', name: 'Age & eligibility', desc: 'Exact age breakdown with government, exam, and legal eligibility.', keys: 'age birthday eligibility exam upsc nda voting senior citizen', render: renderAge },
   { id: 'bmi', group: 'Everyday', name: 'BMI calculator', desc: 'Calculate Body Mass Index and check healthy weight ranges.', keys: 'health weight fitness body mass index', render: renderBmi },
-  { id: 'pdf', group: 'Files', name: 'PDF toolkit', desc: 'Merge, split, extract pages and turn images into a PDF.', keys: 'merge split combine pages images document', render: renderPdf },
+  { id: 'pdf', group: 'Files', name: 'PDF toolkit', desc: 'Merge, split, extract pages, convert PDF to Word, Word to PDF and turn images into a PDF.', keys: 'merge split combine pages images document word docx convert', render: renderPdf },
   { id: 'image', group: 'Files', name: 'Image toolkit', desc: 'Resize, compress and convert photos, or fit a size limit.', keys: 'photo jpg png webp compress resize kb', render: renderImage },
   { id: 'converter', group: 'Everyday', name: 'Converter', desc: 'Units, area, weight and currencies.', keys: 'unit length weight area currency dollar tola acre', render: renderConv },
   { id: 'planner', group: 'Everyday', name: 'Planner', desc: 'Daily tasks, habit streaks and a private journal.', keys: 'todo habit tracker diary notes', render: renderPlanner },
@@ -2201,7 +2520,7 @@ function renderHome(el) {
         return '<a class="irow" href="#/' + t.id + '"><strong>' + t.name + '</strong><span>' + t.desc + '</span></a>';
       }).join('') + '</div></div>';
     }).join('') + '</section>' +
-    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>lR AWM</b> CONNECT HERE <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
+    '<footer class="sitefoot"><span>The website is developed by <b>Bittu</b> and designed by <b>LR AWM</b> my email to contact  <a href="mailto:bittukumar15031987@gmail.com">bittukumar15031987@gmail.com</a></span><span>Browser-native utilities</span></footer>';
 }
 
 function buildNav(filter) {
