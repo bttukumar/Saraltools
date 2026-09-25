@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <html lang="en-IN">
 <head>
 <meta charset="utf-8">
@@ -57,6 +57,15 @@ main:focus{outline:none}
 .navfoot{margin-top:auto;font-size:.82rem;color:var(--muted)}
 .navfoot p{margin:10px 0 0}
 .linkbtn{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:.86rem}
+.bulbbtn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px 8px 10px;color:var(--ink);font-size:.86rem;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s}
+.bulbbtn:hover{border-color:var(--ink)}
+.bulbbtn svg{flex:none;transition:fill .15s,stroke .15s}
+.bulbbtn .bulb{fill:none;stroke:var(--muted)}
+.bulbbtn .filament{stroke:var(--muted)}
+.bulbbtn.lit .bulb{fill:var(--accent);stroke:var(--accent-text)}
+.bulbbtn.lit .filament{stroke:var(--accent-text)}
+.topbar .bulbbtn{margin-left:auto;padding:8px;gap:0}
+.topbar .bulbbtn span{display:none}
 .topbar{display:none}
 .scrim{display:none}
 .main{padding:52px clamp(20px,5vw,72px) 110px;min-width:0;max-width:1180px;width:100%;height:auto}
@@ -264,6 +273,24 @@ select.in{appearance:auto}
 .t-serif .r-sec{text-transform:uppercase;letter-spacing:.08em;font-size:12px}
 .t-accent .r-head{border-bottom:3px solid #F2A516;padding-bottom:12px}
 .t-accent .r-sec{color:#8A5600;border-bottom-color:#F2A516}
+.t-blue .r-head{border-bottom:3px solid #2A5BD7;padding-bottom:12px}
+.t-blue .r-sec{color:#2A5BD7;border-bottom-color:#2A5BD7}
+.t-teal .r-head{border-bottom:3px solid #0B7268;padding-bottom:12px}
+.t-teal .r-sec{color:#0B7268;border-bottom-color:#0B7268}
+.t-navy{font-family:'Times New Roman',Times,serif;font-size:14px}
+.t-navy .r-head{text-align:center;border-bottom:2px solid #1B2A55;padding-bottom:12px}
+.t-navy .r-sec{color:#1B2A55;border-bottom-color:#1B2A55;text-transform:uppercase;letter-spacing:.07em;font-size:12px}
+.t-bold .r-head{background:#12172B;color:#fff;margin:-54px -58px 20px;padding:38px 58px 24px;border-radius:0}
+.t-bold .r-head .r-title{color:#C7CBE0}
+.t-bold .r-head .r-contact{color:#9BA1C0}
+.t-bold .r-sec{color:#12172B;border-bottom-color:#12172B}
+.r-head{position:relative}
+.r-photo{position:absolute;top:0;right:0;width:66px;height:66px;object-fit:cover;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #d9dce3}
+.t-bold .r-photo{border-color:#12172B;box-shadow:0 0 0 1px #4a5170;top:2px}
+.phrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:2px 0 4px}
+.ph-prev{width:52px;height:52px;object-fit:cover;border-radius:50%;border:1px solid var(--line);flex:none}
+.quickrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.quickrow select{flex:1;min-width:160px}
 .i-top{display:flex;justify-content:space-between;gap:20px;margin-bottom:28px}
 .i-top h2{font-size:30px;font-weight:700;letter-spacing:-.02em;color:#151826}
 .i-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;white-space:pre-line}
@@ -317,6 +344,9 @@ select.in{appearance:auto}
       </svg>
       saral
     </a>
+    <button class="bulbbtn" id="themeBtnTop" type="button" aria-label="Switch to dark theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
+    </button>
   </header>
   <nav class="nav" id="nav" aria-label="Tools">
     <a class="brand" href="#/">
@@ -333,7 +363,10 @@ select.in{appearance:auto}
     <div class="search"><input id="q" type="search" placeholder="Find a tool" aria-label="Find a tool" autocomplete="off"></div>
     <div id="navList"></div>
     <div class="navfoot">
-      <button class="linkbtn" id="themeBtn" type="button">Switch theme</button>
+      <button class="bulbbtn" id="themeBtn" type="button" aria-label="Switch to dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
+        <span id="themeBtnLabel">Dark mode</span>
+      </button>
       <p>The website is developed by Bittu and designed by LR AWM CONNECT WITH ME  at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
     </div>
   </nav>
@@ -1714,7 +1747,7 @@ function renderPdf(el) {
 }
 
 /* 10. PDF Audio Reader */
-const pdfReaderState = { file: null, bytes: null, fullText: '', pageTexts: [], totalPages: 0, speed: 1.0, startPage: 1, isPlaying: false, isPaused: false, statusText: 'Choose a PDF file to begin listening.' };
+const pdfReaderState = { file: null, bytes: null, fullText: '', pageTexts: [], totalPages: 0, speed: 1.0, pitch: 1.0, voiceURI: '', isPlaying: false, isPaused: false, startPage: 1, statusText: 'Choose a PDF file to begin listening.' };
 
 function renderPdfReader(el) {
   const s = pdfReaderState;
@@ -1730,6 +1763,12 @@ function renderPdfReader(el) {
     '<option value="1.5"' + (s.speed === 1.5 ? ' selected' : '') + '>1.5x</option>' +
     '<option value="2"' + (s.speed === 2 ? ' selected' : '') + '>2.0x</option>' +
     '</select></label>' +
+    '<label class="lbl"><span>Pitch</span>' +
+    '<select class="in" id="pr_pitch" style="width:110px">' +
+    ['0.5', '0.75', '1', '1.25', '1.5', '2'].map(function (p) { return '<option value="' + p + '"' + (String(s.pitch) === p ? ' selected' : '') + '>' + p + 'x</option>'; }).join('') +
+    '</select></label>' +
+    '<label class="lbl"><span>Voice</span>' +
+    '<select class="in" id="pr_voice" style="width:230px"><option value="">Default voice</option></select></label>' +
     '<label class="lbl"><span>Start from page</span>' +
     '<input class="in" type="number" id="pr_startpage" min="1" max="' + (s.totalPages || 1) + '" value="' + s.startPage + '" style="width:110px"' + (!s.file ? ' disabled' : '') + '>' +
     '</label>' +
@@ -1754,6 +1793,32 @@ function renderPdfReader(el) {
   const speedSelect = $('#pr_speed', el);
   speedSelect.onchange = function (e) {
     s.speed = parseFloat(e.target.value) || 1.0;
+    if (s.isPlaying && !s.isPaused) {
+      startSpeech();
+    }
+  };
+
+  const pitchSelect = $('#pr_pitch', el);
+  pitchSelect.onchange = function (e) {
+    s.pitch = parseFloat(e.target.value) || 1.0;
+    if (s.isPlaying && !s.isPaused) {
+      startSpeech();
+    }
+  };
+
+  const voiceSelect = $('#pr_voice', el);
+  function populateVoices() {
+    if (!('speechSynthesis' in window) || !voiceSelect.isConnected) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return;
+    voiceSelect.innerHTML = '<option value="">Default voice</option>' + voices.map(function (v) {
+      return '<option value="' + esc(v.voiceURI) + '"' + (v.voiceURI === s.voiceURI ? ' selected' : '') + '>' + esc(v.name) + ' (' + v.lang + ')</option>';
+    }).join('');
+  }
+  populateVoices();
+  if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = populateVoices;
+  voiceSelect.onchange = function (e) {
+    s.voiceURI = e.target.value || '';
     if (s.isPlaying && !s.isPaused) {
       startSpeech();
     }
@@ -1916,6 +1981,11 @@ function renderPdfReader(el) {
 
     const utterance = new SpeechSynthesisUtterance(textToRead);
     utterance.rate = s.speed;
+    utterance.pitch = s.pitch;
+    if (s.voiceURI) {
+      const v = window.speechSynthesis.getVoices().find(function (x) { return x.voiceURI === s.voiceURI; });
+      if (v) utterance.voice = v;
+    }
     utterance.onstart = function () {
       s.isPlaying = true;
       s.isPaused = false;
@@ -1948,6 +2018,12 @@ function renderPdfReader(el) {
       '<div class="row"><span>Total pages</span><b>' + s.totalPages + '</b></div>' +
       '<div class="row"><span>Extracted words</span><b>' + wordsCount.toLocaleString('en-IN') + '</b></div>' +
       '<div class="row"><span>Reading speed</span><b>' + s.speed + 'x</b></div>' +
+      '<div class="row"><span>Pitch</span><b>' + s.pitch + 'x</b></div>' +
+      '<div class="row"><span>Voice</span><b>' + (function () {
+        if (!s.voiceURI || !('speechSynthesis' in window)) return 'Default';
+        const v = window.speechSynthesis.getVoices().find(function (x) { return x.voiceURI === s.voiceURI; });
+        return v ? esc(v.name) : 'Default';
+      })() + '</b></div>' +
       '</div>';
   }
 }
@@ -2250,6 +2326,160 @@ function renderPlanner(el) {
   }
 }
 
+/* GPA / CGPA calculator */
+const GRADE_SCALES = {
+  '10': { max: 10, label: '10-point', grades: [['O', 10], ['A+', 9], ['A', 8], ['B+', 7], ['B', 6], ['C', 5], ['P', 4], ['F', 0]] },
+  '4': { max: 4, label: '4.0 scale', grades: [['A+', 4], ['A', 4], ['A-', 3.7], ['B+', 3.3], ['B', 3], ['B-', 2.7], ['C+', 2.3], ['C', 2], ['C-', 1.7], ['D', 1], ['F', 0]] }
+};
+const gpaState = {
+  scale: '10',
+  rows: [
+    { id: uid(), name: 'Subject 1', credits: 4, grade: 'A' },
+    { id: uid(), name: 'Subject 2', credits: 3, grade: 'A+' },
+    { id: uid(), name: 'Subject 3', credits: 4, grade: 'B+' }
+  ]
+};
+function renderGpa(el) {
+  const s = gpaState;
+  el.innerHTML = head('GPA / CGPA calculator', 'Add every subject with its credit hours and grade to get a weighted grade point average. Works on the 10-point scale or the 4.0 scale.') +
+    seg('gscale', [['10', '10-point'], ['4', '4.0 scale']], s.scale) +
+    '<div class="calc" style="margin-top:22px"><div class="inputs">' +
+    '<div id="gpa_rows"></div>' +
+    '<div class="chips" style="margin-top:14px"><button class="chip" id="gpa_add" type="button">+ Add subject</button></div>' +
+    '</div><div class="panel stick" id="gpa_out" aria-live="polite"></div></div>';
+
+  onSeg(el, 'gscale', function (v) {
+    s.scale = v;
+    const first = GRADE_SCALES[v].grades[0][0];
+    s.rows.forEach(function (r) { r.grade = first; });
+    drawRows(); update();
+  });
+  $('#gpa_add', el).onclick = function () {
+    s.rows.push({ id: uid(), name: 'Subject ' + (s.rows.length + 1), credits: 3, grade: GRADE_SCALES[s.scale].grades[0][0] });
+    drawRows(); update();
+  };
+
+  drawRows();
+  update();
+
+  function drawRows() {
+    const wrap = $('#gpa_rows', el), opts = GRADE_SCALES[s.scale].grades;
+    wrap.innerHTML = s.rows.map(function (r, i) {
+      return '<div class="frow" style="grid-template-columns:minmax(0,1fr) 84px 118px 32px;align-items:end;gap:10px">' +
+        '<label class="lbl"><span>Subject ' + (i + 1) + '</span><input class="in" data-f="name" data-id="' + r.id + '" value="' + esc(r.name) + '" maxlength="60"></label>' +
+        '<label class="lbl"><span>Credits</span><input class="in" type="number" inputmode="decimal" min="0" step="0.5" data-f="credits" data-id="' + r.id + '" value="' + r.credits + '"></label>' +
+        '<label class="lbl"><span>Grade</span><select class="in" data-f="grade" data-id="' + r.id + '">' + opts.map(function (g) {
+          return '<option value="' + g[0] + '"' + (g[0] === r.grade ? ' selected' : '') + '>' + g[0] + ' (' + g[1] + ')</option>';
+        }).join('') + '</select></label>' +
+        '<button class="x" data-a="delrow" data-id="' + r.id + '" aria-label="Remove subject ' + (i + 1) + '" title="Remove">\u2715</button>' +
+        '</div>';
+    }).join('') || '<p class="empty">No subjects yet. Add your first subject above.</p>';
+
+    wrap.oninput = wrap.onchange = function (e) {
+      const t = e.target, id = t.dataset.id, f = t.dataset.f;
+      if (!id || !f) return;
+      const row = s.rows.find(function (r) { return r.id === id; });
+      if (!row) return;
+      if (f === 'credits') row.credits = Math.max(0, parseFloat(t.value) || 0); else row[f] = t.value;
+      update();
+    };
+    wrap.onclick = function (e) {
+      const t = e.target.closest('[data-a="delrow"]'); if (!t) return;
+      s.rows = s.rows.filter(function (r) { return r.id !== t.dataset.id; });
+      drawRows(); update();
+    };
+  }
+
+  function update() {
+    const opts = GRADE_SCALES[s.scale].grades, max = GRADE_SCALES[s.scale].max;
+    const pointOf = function (g) { const f = opts.find(function (o) { return o[0] === g; }); return f ? f[1] : 0; };
+    let totalCredits = 0, totalPoints = 0;
+    s.rows.forEach(function (r) { totalCredits += r.credits; totalPoints += r.credits * pointOf(r.grade); });
+    const gpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
+    const pct = max ? Math.min(100, Math.max(0, gpa / max * 100)) : 0;
+    $('#gpa_out', el).innerHTML = '<div class="muted">Overall GPA</div>' +
+      '<div class="big">' + gpa.toFixed(2) + ' <span style="font-size:1.4rem;font-weight:400">/ ' + max + '</span></div>' +
+      '<div class="words">' + (totalCredits ? 'Across ' + s.rows.length + ' subject' + (s.rows.length === 1 ? '' : 's') + ' and ' + totalCredits + ' total credits.' : 'Add subjects with credits to see your GPA.') + '</div>' +
+      '<div class="split"><span class="a" style="width:' + pct.toFixed(1) + '%"></span><span class="b" style="width:' + (100 - pct).toFixed(1) + '%"></span></div>' +
+      '<div class="row"><span>Total credits</span><b>' + totalCredits + '</b></div>' +
+      '<div class="row"><span>Weighted grade points</span><b>' + totalPoints.toFixed(2) + '</b></div>' +
+      (s.scale === '10' ? '<div class="row"><span>Approx. percentage</span><b>' + (gpa * 9.5).toFixed(1) + '%</b></div><p class="note">Percentage uses the common CGPA \u00d7 9.5 approximation; your institution may use a different formula.</p>' : '');
+  }
+}
+
+/* Budget planner */
+const budget = store.get('budget', {
+  income: [{ id: uid(), name: 'Salary', amount: 60000 }],
+  expenses: [
+    { id: uid(), name: 'Rent', amount: 15000 },
+    { id: uid(), name: 'Groceries', amount: 6000 },
+    { id: uid(), name: 'Transport', amount: 2000 }
+  ]
+});
+function saveBudget() { store.set('budget', budget); }
+function renderBudget(el) {
+  el.innerHTML = head('Budget planner', 'List monthly income and expenses to see what you save and where the money goes. Saved only in this browser, nothing is uploaded.') +
+    '<div class="calc"><div class="inputs">' +
+    '<h2 class="sub">Income</h2>' +
+    '<div class="addrow"><input class="in" id="bi_name" placeholder="Source, for example Salary" aria-label="Income source" maxlength="60"><input class="in" id="bi_amt" type="number" inputmode="decimal" min="0" placeholder="Amount" style="max-width:130px" aria-label="Income amount"><button class="btn small" id="bi_add" type="button">Add</button></div>' +
+    '<ul class="tasks" id="bud_income"></ul>' +
+    '<h2 class="sub" style="margin-top:32px">Expenses</h2>' +
+    '<div class="addrow"><input class="in" id="be_name" placeholder="Category, for example Rent" aria-label="Expense category" maxlength="60"><input class="in" id="be_amt" type="number" inputmode="decimal" min="0" placeholder="Amount" style="max-width:130px" aria-label="Expense amount"><button class="btn small" id="be_add" type="button">Add</button></div>' +
+    '<ul class="tasks" id="bud_expenses"></ul>' +
+    '</div><div class="panel stick" id="bud_out" aria-live="polite"></div></div>';
+
+  $('#bi_add', el).onclick = function () { addItem('income', $('#bi_name', el), $('#bi_amt', el)); };
+  $('#be_add', el).onclick = function () { addItem('expenses', $('#be_name', el), $('#be_amt', el)); };
+  el.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    if (e.target.id === 'bi_name' || e.target.id === 'bi_amt') { e.preventDefault(); addItem('income', $('#bi_name', el), $('#bi_amt', el)); }
+    else if (e.target.id === 'be_name' || e.target.id === 'be_amt') { e.preventDefault(); addItem('expenses', $('#be_name', el), $('#be_amt', el)); }
+  });
+  el.onclick = function (e) {
+    const t = e.target.closest('[data-a="delitem"]'); if (!t) return;
+    budget[t.dataset.k] = budget[t.dataset.k].filter(function (it) { return it.id !== t.dataset.id; });
+    saveBudget(); drawLists(); update();
+  };
+
+  function addItem(key, nameInp, amtInp) {
+    const name = nameInp.value.trim(), amt = parseFloat(amtInp.value);
+    if (!name || !isFinite(amt) || amt <= 0) { toast('Enter a name and an amount.'); return; }
+    budget[key].push({ id: uid(), name: name, amount: amt });
+    nameInp.value = ''; amtInp.value = '';
+    saveBudget(); drawLists(); update();
+    nameInp.focus();
+  }
+  function drawLists() {
+    ['income', 'expenses'].forEach(function (key) {
+      const ul = $('#bud_' + key, el);
+      ul.innerHTML = budget[key].map(function (it) {
+        return '<li><span class="tx">' + esc(it.name) + '</span><b style="margin-right:10px">' + inr(it.amount) + '</b><button class="x" data-a="delitem" data-k="' + key + '" data-id="' + it.id + '" aria-label="Remove ' + esc(it.name) + '">Delete</button></li>';
+      }).join('') || '<li class="empty">Nothing added yet.</li>';
+    });
+  }
+
+  drawLists();
+  update();
+
+  function update() {
+    const totalIn = budget.income.reduce(function (a, b) { return a + b.amount; }, 0);
+    const totalOut = budget.expenses.reduce(function (a, b) { return a + b.amount; }, 0);
+    const bal = totalIn - totalOut, rate = totalIn > 0 ? bal / totalIn * 100 : 0;
+    const pctSpent = totalIn > 0 ? Math.min(100, Math.max(0, totalOut / totalIn * 100)) : 0;
+    $('#bud_out', el).innerHTML = '<div class="muted">' + (bal >= 0 ? 'Monthly surplus' : 'Monthly shortfall') + '</div>' +
+      '<div class="big' + (bal < 0 ? ' err' : '') + '">' + inr(Math.abs(bal)) + '</div>' +
+      '<div class="words">' + (totalIn || totalOut ? (bal >= 0 ? 'You are saving about ' + rate.toFixed(1) + '% of your income.' : 'Expenses exceed income by ' + Math.abs(rate).toFixed(1) + '%.') : 'Add income and expenses to see your monthly balance.') + '</div>' +
+      '<div class="split"><span class="a" style="width:' + (100 - pctSpent).toFixed(1) + '%"></span><span class="b" style="width:' + pctSpent.toFixed(1) + '%"></span></div>' +
+      '<div class="legend"><span><i class="sw a"></i>Left over</span><span><i class="sw b"></i>Spent</span></div>' +
+      '<div class="row"><span>Total income</span><b>' + inr(totalIn) + '</b></div>' +
+      '<div class="row"><span>Total expenses</span><b>' + inr(totalOut) + '</b></div>' +
+      (budget.expenses.length ? '<h2 class="sub" style="margin-top:26px">Where it goes</h2>' + budget.expenses.slice().sort(function (a, b) { return b.amount - a.amount; }).map(function (it) {
+        const p = totalOut > 0 ? (it.amount / totalOut * 100) : 0;
+        return '<div class="row"><span>' + esc(it.name) + '</span><b>' + inr(it.amount) + ' \u00b7 ' + p.toFixed(0) + '%</b></div>';
+      }).join('') : '');
+  }
+}
+
 /* 14. Password */
 const pwState = { len: 16, upper: true, lower: true, digits: true, symbols: true, noAmb: false, out: '' };
 function randInt(max) {
@@ -2303,8 +2533,9 @@ function renderPassword(el) {
 }
 
 /* 15. Resume Builder */
+const RESUME_THEMES = [['plain', 'Plain'], ['serif', 'Serif'], ['accent', 'Accent'], ['blue', 'Modern blue'], ['teal', 'Minimal teal'], ['navy', 'Classic navy'], ['bold', 'Bold header']];
 const R_SAMPLE = {
-  tpl: 'accent', name: 'Laxmi', title: 'Product designer', email: 'laxmi@example.com', phone: '+91 98765 43210', location: 'Bengaluru, India', links: 'linkedin.com/in/laxmi',
+  tpl: 'accent', photo: '', photoType: '', name: 'Laxmi', title: 'Product designer', email: 'laxmi@example.com', phone: '+91 98765 43210', location: 'Bengaluru, India', links: 'linkedin.com/in/laxmi',
   summary: 'Product designer with six years of experience shipping consumer apps used by millions. I work best where research, design and engineering share one table.',
   exp: [
     { role: 'Senior product designer', company: 'Northwind Pay', place: 'Bengaluru', start: 'Jun 2022', end: 'Present', points: 'Led the redesign of onboarding, lifting completed sign-ups by 28%\nBuilt a shared design system used by five product teams\nMentored three junior designers' },
@@ -2314,9 +2545,69 @@ const R_SAMPLE = {
   skills: 'Product design, Prototyping, User research, Design systems, Figma, Accessibility'
 };
 const RESUME = (function () { const r = store.get('resume', null); return r && r.exp && r.edu ? r : clone(R_SAMPLE); })();
-const R_BLANK = { tpl: 'plain', name: '', title: '', email: '', phone: '', location: '', links: '', summary: '', exp: [{ role: '', company: '', place: '', start: '', end: '', points: '' }], edu: [{ degree: '', school: '', start: '', end: '', detail: '' }], skills: '' };
+if (RESUME.photo === undefined) RESUME.photo = '';
+if (RESUME.photoType === undefined) RESUME.photoType = '';
+const R_BLANK = { tpl: 'plain', photo: '', photoType: '', name: '', title: '', email: '', phone: '', location: '', links: '', summary: '', exp: [{ role: '', company: '', place: '', start: '', end: '', points: '' }], edu: [{ degree: '', school: '', start: '', end: '', detail: '' }], skills: '' };
 const saveResume = debounce(function () { store.set('resume', RESUME); }, 400);
 const bulletsOf = function (t) { return String(t || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean); };
+
+/* quick-fill role presets, used to draft a starting resume for a chosen field */
+const ROLE_PRESETS = {
+  intern: {
+    label: 'Intern / Fresher', title: 'Computer Science Student',
+    summary: 'Final-year student looking for an internship to apply classroom learning to real projects. Quick to pick up new tools, comfortable working in a team, and reliable with deadlines.',
+    skills: 'Communication, Microsoft Office, Basic programming, Teamwork, Time management, Willingness to learn',
+    exp: [{ role: 'Campus volunteer', company: 'College tech fest', place: '', start: 'Aug 2024', end: 'Present', points: 'Coordinated logistics for a 3-day event with over 500 attendees\nManaged a team of 6 volunteers and a shared task tracker' }],
+    edu: [{ degree: 'B.Tech / B.Sc, your stream', school: 'Your college name', start: '2022', end: '2026', detail: '' }]
+  },
+  teacher: {
+    label: 'Teacher / Educator', title: 'Primary School Teacher',
+    summary: 'Dedicated educator focused on making lessons clear and engaging for every student. Experienced in lesson planning, classroom management, and tracking student progress.',
+    skills: 'Lesson planning, Classroom management, Student assessment, Curriculum design, Parent communication, Patience',
+    exp: [{ role: 'Teacher', company: 'Your school name', place: 'City', start: 'Jun 2021', end: 'Present', points: 'Planned and delivered daily lessons for a class of 35 students\nImproved average test scores by redesigning weekly practice sheets\nRan after-school doubt-clearing sessions twice a week' }],
+    edu: [{ degree: 'B.Ed, Education', school: 'Your college or university', start: '2018', end: '2020', detail: '' }]
+  },
+  techie: {
+    label: 'Tech / Software', title: 'Software Engineer',
+    summary: 'Software engineer who enjoys turning ambiguous problems into shipped features. Comfortable across the stack, with a focus on clean, testable code and clear documentation.',
+    skills: 'JavaScript, Python, SQL, Git, REST APIs, Cloud basics (AWS/GCP), Debugging, Agile',
+    exp: [{ role: 'Software Engineer', company: 'Your company name', place: 'City', start: 'Jul 2022', end: 'Present', points: 'Built and shipped features used by thousands of daily users\nCut page load time by 35% through query and asset optimisation\nWrote unit tests that raised coverage from 40% to 80%' }],
+    edu: [{ degree: 'B.Tech, Computer Science', school: 'Your college or university', start: '2018', end: '2022', detail: '' }]
+  },
+  sales: {
+    label: 'Sales / Marketing', title: 'Sales & Marketing Executive',
+    summary: 'Target-driven sales and marketing professional with a track record of growing pipeline and closing deals. Comfortable with cold outreach, client relationships, and campaign reporting.',
+    skills: 'Lead generation, CRM (Salesforce/HubSpot), Negotiation, Cold outreach, Campaign reporting, Client relationships',
+    exp: [{ role: 'Sales Executive', company: 'Your company name', place: 'City', start: 'Jan 2022', end: 'Present', points: 'Consistently exceeded quarterly sales targets by 15-20%\nBuilt a pipeline of 200+ qualified leads through outreach campaigns\nManaged key accounts worth over \u20B950 lakh in annual revenue' }],
+    edu: [{ degree: 'BBA, Marketing', school: 'Your college or university', start: '2018', end: '2021', detail: '' }]
+  },
+  healthcare: {
+    label: 'Healthcare', title: 'Staff Nurse',
+    summary: 'Compassionate healthcare professional committed to patient safety and quality care. Experienced in patient monitoring, care coordination, and working calmly under pressure.',
+    skills: 'Patient care, Vital sign monitoring, Medical records, Infection control, Emergency response, Teamwork',
+    exp: [{ role: 'Staff Nurse', company: 'Your hospital or clinic name', place: 'City', start: 'Jun 2021', end: 'Present', points: 'Cared for 15-20 patients per shift across a general ward\nMaintained accurate medical records and medication schedules\nTrained 4 new nursing staff on ward procedures' }],
+    edu: [{ degree: 'B.Sc Nursing', school: 'Your college or university', start: '2017', end: '2021', detail: '' }]
+  },
+  creative: {
+    label: 'Creative / Design', title: 'Graphic Designer',
+    summary: 'Visual designer with an eye for detail and a habit of tying every design decision back to the brief. Comfortable owning a project from mood board to final export.',
+    skills: 'Figma, Adobe Photoshop, Adobe Illustrator, Typography, Branding, Social media design',
+    exp: [{ role: 'Graphic Designer', company: 'Your studio or company name', place: 'City', start: 'Mar 2022', end: 'Present', points: 'Designed brand assets used across web, print and social\nDelivered 10+ campaigns on tight deadlines with no revisions needed\nBuilt a reusable template library that cut design time by 30%' }],
+    edu: [{ degree: 'B.Des, Visual Communication', school: 'Your college or university', start: '2018', end: '2022', detail: '' }]
+  }
+};
+function applyResumePreset(key) {
+  const p = ROLE_PRESETS[key]; if (!p) return;
+  RESUME.title = p.title; RESUME.summary = p.summary; RESUME.skills = p.skills;
+  RESUME.exp = clone(p.exp); RESUME.edu = clone(p.edu);
+}
+function dataUrlToBytes(dataUrl) {
+  const base64 = dataUrl.split(',')[1] || '';
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
 
 function resumeForm(r) {
   const ent = function (e, i) {
@@ -2331,7 +2622,14 @@ function resumeForm(r) {
       fld('Details (optional)', 'edu.' + i + '.detail', e.detail, { area: 1, rows: 2 }) +
       '<button class="x" type="button" data-act="del-edu" data-i="' + i + '">Remove this entry</button></div>';
   };
-  return '<h3>Basics</h3><div class="frow">' + fld('Full name', 'name', r.name) + fld('Job title', 'title', r.title) + '</div>' +
+  return '<h3>Quick-fill by role</h3><div class="quickrow"><select class="in" id="rrole" aria-label="Choose a role to draft content for">' +
+    '<option value="">Choose a role\u2026</option>' + Object.keys(ROLE_PRESETS).map(function (k) { return '<option value="' + k + '">' + ROLE_PRESETS[k].label + '</option>'; }).join('') +
+    '</select><button class="btn ghost small" type="button" id="rrolebtn">Draft resume</button></div>' +
+    '<p class="note" style="margin:0 0 22px">Fills in a ready-made title, summary, skills and sample entries for that field, built from common resume patterns \u2014 it\'s a smart starting draft, not a live AI writer, so edit it to match your own experience.</p>' +
+    '<h3>Photo (optional)</h3><div class="phrow">' + (r.photo ? '<img class="ph-prev" src="' + r.photo + '" alt="">' : '') +
+    '<label class="btn ghost small" style="cursor:pointer">Choose photo<input type="file" accept="image/png,image/jpeg" id="rphoto" class="sr"></label>' +
+    (r.photo ? '<button class="x" type="button" id="rphotodel">Remove photo</button>' : '') + '</div>' +
+    '<h3>Basics</h3><div class="frow">' + fld('Full name', 'name', r.name) + fld('Job title', 'title', r.title) + '</div>' +
     '<div class="frow">' + fld('Email', 'email', r.email, { type: 'email' }) + fld('Phone', 'phone', r.phone) + '</div>' +
     '<div class="frow">' + fld('Location', 'location', r.location) + fld('Links', 'links', r.links) + '</div>' +
     '<h3>Summary</h3>' + fld('A short introduction', 'summary', r.summary, { area: 1, rows: 4 }) +
@@ -2350,18 +2648,28 @@ function resumePaper(r) {
   const edu = r.edu.filter(function (e) { return e.degree || e.school; }).map(function (e) {
     return '<div class="r-item"><div class="r-line"><b>' + esc(e.degree) + '</b><span class="mut">' + dt(e) + '</span></div><div class="r-sub">' + esc(e.school) + '</div>' + (e.detail ? '<p>' + esc(e.detail) + '</p>' : '') + '</div>';
   }).join('');
-  return '<div class="r-head"><h1 class="r-name">' + esc(r.name || 'Laxmi') + '</h1>' + (r.title ? '<div class="r-title">' + esc(r.title) + '</div>' : '') + (contact ? '<div class="r-contact">' + contact + '</div>' : '') + '</div>' +
+  return '<div class="r-head"' + (r.photo ? ' style="padding-right:86px"' : '') + '>' + (r.photo ? '<img class="r-photo" src="' + r.photo + '" alt="">' : '') + '<h1 class="r-name">' + esc(r.name || 'Laxmi') + '</h1>' + (r.title ? '<div class="r-title">' + esc(r.title) + '</div>' : '') + (contact ? '<div class="r-contact">' + contact + '</div>' : '') + '</div>' +
     (r.summary ? '<h3 class="r-sec">Summary</h3><p>' + esc(r.summary) + '</p>' : '') +
     (exp ? '<h3 class="r-sec">Experience</h3>' + exp : '') + (edu ? '<h3 class="r-sec">Education</h3>' + edu : '') +
     (r.skills ? '<h3 class="r-sec">Skills</h3><p>' + esc(r.skills) + '</p>' : '');
 }
+const THEME_PDF = {
+  plain: { serifFont: false, accentRGB: null, ruleRGB: [.75, .77, .82], headerRule: false, band: null },
+  serif: { serifFont: true, accentRGB: null, ruleRGB: [.75, .77, .82], headerRule: false, band: null },
+  accent: { serifFont: false, accentRGB: [.54, .34, 0], ruleRGB: [.95, .65, .09], headerRule: true, ruleThickness: 2.5, band: null },
+  blue: { serifFont: false, accentRGB: [.16, .36, .84], ruleRGB: [.16, .36, .84], headerRule: true, ruleThickness: 2.5, band: null },
+  teal: { serifFont: false, accentRGB: [.04, .45, .41], ruleRGB: [.04, .45, .41], headerRule: true, ruleThickness: 2.5, band: null },
+  navy: { serifFont: true, accentRGB: [.11, .16, .33], ruleRGB: [.11, .16, .33], headerRule: true, ruleThickness: 1.2, band: null },
+  bold: { serifFont: false, accentRGB: [.07, .09, .17], ruleRGB: [.07, .09, .17], headerRule: false, band: [.07, .09, .17] }
+};
 async function resumePdf(r) {
   await LIBS.pdf();
-  const PL = PDFLib, serif = r.tpl === 'serif', accent = r.tpl === 'accent', rgb = PL.rgb, SF = PL.StandardFonts;
+  const PL = PDFLib, meta = THEME_PDF[r.tpl] || THEME_PDF.plain, serif = meta.serifFont, rgb = PL.rgb, SF = PL.StandardFonts;
   const doc = await PL.PDFDocument.create();
   const F = await doc.embedFont(serif ? SF.TimesRoman : SF.Helvetica), FB = await doc.embedFont(serif ? SF.TimesRomanBold : SF.HelveticaBold), FI = await doc.embedFont(serif ? SF.TimesRomanItalic : SF.HelveticaOblique);
   const W = 595.28, H = 841.89, M = 50, CW = W - 2 * M, S = sanitizePdf;
-  const ink = rgb(.08, .09, .15), mute = rgb(.36, .38, .45), acc = accent ? rgb(.54, .34, 0) : ink, rule = accent ? rgb(.95, .65, .09) : rgb(.75, .77, .82);
+  const ink = rgb(.08, .09, .15), mute = rgb(.36, .38, .45);
+  const acc = meta.accentRGB ? rgb.apply(null, meta.accentRGB) : ink, rule = meta.ruleRGB ? rgb.apply(null, meta.ruleRGB) : rgb(.75, .77, .82);
   let page = doc.addPage([W, H]), y = H - M;
   const need = function (h) { if (y - h < M) { page = doc.addPage([W, H]); y = H - M; } };
   const wrap = function (t, f, sz, w) {
@@ -2385,11 +2693,23 @@ async function resumePdf(r) {
     need(46); y -= 20; put(S(serif ? t.toUpperCase() : t), M, FB, 10.5, acc); y -= 5;
     page.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: .7, color: rule }); y -= 2;
   };
-  centered(r.name || 'Laxmi', FB, serif ? 24 : 26, ink, serif ? 26 : 28);
-  if (r.title) centered(r.title, F, 12.5, mute, 17);
+  const bandH = 128;
+  if (meta.band) page.drawRectangle({ x: 0, y: H - bandH, width: W, height: bandH, color: rgb.apply(null, meta.band) });
+  if (r.photo) {
+    try {
+      const bytes = dataUrlToBytes(r.photo);
+      const img = /png/i.test(r.photoType || '') ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
+      const pw = 64, ph = 64, px = W - M - pw, py = meta.band ? (H - bandH + (bandH - ph) / 2) : (H - M - ph);
+      page.drawImage(img, { x: px, y: py, width: pw, height: ph });
+    } catch (e) { /* skip an unreadable photo rather than fail the whole PDF */ }
+  }
+  const headInk = meta.band ? rgb(1, 1, 1) : ink, headMute = meta.band ? rgb(.78, .80, .88) : mute;
+  centered(r.name || 'Laxmi', FB, serif ? 24 : 26, headInk, serif ? 26 : 28);
+  if (r.title) centered(r.title, F, 12.5, headMute, 17);
   const contact = [r.email, r.phone, r.location, r.links].filter(Boolean).join('   |   ');
-  if (contact) wrap(contact, F, 9.5, CW).forEach(function (ln) { const w = F.widthOfTextAtSize(ln, 9.5); need(14); y -= 14; put(ln, serif ? (W - w) / 2 : M, F, 9.5, mute); });
-  if (accent) { y -= 10; page.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: 2.5, color: rule }); }
+  if (contact) wrap(contact, F, 9.5, CW).forEach(function (ln) { const w = F.widthOfTextAtSize(ln, 9.5); need(14); y -= 14; put(ln, serif ? (W - w) / 2 : M, F, 9.5, headMute); });
+  if (meta.headerRule) { y -= 10; page.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: meta.ruleThickness || 2.5, color: rule }); }
+  if (meta.band) y -= 8;
   if (r.summary) { sec('Summary'); para(r.summary, F, 10.5, ink, M, CW, 15); }
   const entry = function (title, dates, sub, extra) {
     need(46); y -= 8; y -= 12; put(S(title), M, FB, 10.5, ink);
@@ -2422,14 +2742,34 @@ async function resumePdf(r) {
 function renderResume(el) {
   const r = RESUME;
   el.innerHTML = head('Resume builder', 'Fill in the form and watch the resume update. The PDF has real, selectable text, so it works with applicant tracking systems.') +
-    '<div class="btnrow" style="margin:0 0 22px">' + seg('tpl', [['plain', 'Plain'], ['serif', 'Serif'], ['accent', 'Accent']], r.tpl) +
+    '<div class="btnrow" style="margin:0 0 22px">' + seg('tpl', RESUME_THEMES, r.tpl) +
     '<button class="btn" id="rpdf" type="button">Download PDF</button><button class="btn ghost small" id="rblank" type="button">Start blank</button></div>' +
     '<div class="viewseg">' + seg('view', [['edit', 'Edit'], ['preview', 'Preview']], 'edit') + '</div>' +
     '<div class="mk" data-view="edit"><div class="fm" id="rform"></div><div class="pv"><div class="paperwrap" id="rwrap"><div class="paper" id="rpaper"></div></div>' +
     '<p class="note">The preview matches the generated PDF directly.</p></div></div>';
   const form = $('#rform', el), wrap = $('#rwrap', el), paper = $('#rpaper', el), mk = $('.mk', el);
-  const drawForm = function () { form.innerHTML = resumeForm(r); };
-  const drawPaper = function () { paper.className = 'paper' + (r.tpl === 'serif' ? ' t-serif' : r.tpl === 'accent' ? ' t-accent' : ''); paper.innerHTML = resumePaper(r); fitPaper(wrap); };
+  const drawForm = function () { form.innerHTML = resumeForm(r); bindFormExtras(); };
+  const drawPaper = function () { paper.className = 'paper' + (r.tpl && r.tpl !== 'plain' ? ' t-' + r.tpl : ''); paper.innerHTML = resumePaper(r); fitPaper(wrap); };
+  function bindFormExtras() {
+    const photoInput = $('#rphoto', form);
+    if (photoInput) photoInput.onchange = function (e) {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      if (!/^image\/(png|jpeg)$/.test(f.type)) { toast('Please choose a JPG or PNG photo.'); return; }
+      if (f.size > 3 * 1024 * 1024) { toast('Photo is too large (max 3 MB).'); return; }
+      const reader = new FileReader();
+      reader.onload = function () { r.photo = String(reader.result); r.photoType = f.type; drawForm(); drawPaper(); saveResume(); };
+      reader.onerror = function () { toast('Could not read that photo.'); };
+      reader.readAsDataURL(f);
+    };
+    const photoDel = $('#rphotodel', form);
+    if (photoDel) photoDel.onclick = function () { r.photo = ''; r.photoType = ''; drawForm(); drawPaper(); saveResume(); };
+    const roleBtn = $('#rrolebtn', form);
+    if (roleBtn) roleBtn.onclick = function () {
+      const key = $('#rrole', form).value;
+      if (!key) { toast('Choose a role first.'); return; }
+      applyResumePreset(key); drawForm(); drawPaper(); saveResume(); toast('Drafted a ' + ROLE_PRESETS[key].label + ' resume \u2014 edit it to make it yours.');
+    };
+  }
   drawForm(); drawPaper();
   bindPaths(form, r, function () { drawPaper(); saveResume(); });
   onSeg(el, 'tpl', function (v) { r.tpl = v; drawPaper(); saveResume(); });
@@ -2738,14 +3078,16 @@ const TOOLS = [
   { id: 'retirement', group: 'Money', name: 'Retirement', desc: 'The corpus you need and the monthly saving to reach it.', keys: 'pension corpus fire nps', render: renderRetire },
   { id: 'age', group: 'Everyday', name: 'Age & eligibility', desc: 'Exact age breakdown with government, exam, and legal eligibility.', keys: 'age birthday eligibility exam upsc nda voting senior citizen', render: renderAge },
   { id: 'bmi', group: 'Everyday', name: 'BMI calculator', desc: 'Calculate Body Mass Index and check healthy weight ranges.', keys: 'health weight fitness body mass index', render: renderBmi },
+  { id: 'gpa', group: 'Everyday', name: 'GPA / CGPA calculator', desc: 'Weighted grade point average from subject credits and grades, 10-point or 4.0 scale.', keys: 'gpa cgpa grade point average college school exam marks', render: renderGpa },
+  { id: 'budget', group: 'Money', name: 'Budget planner', desc: 'Track monthly income and expenses to see what you save and where it goes.', keys: 'budget expense income savings spending money monthly', render: renderBudget },
   { id: 'pdf', group: 'Files', name: 'PDF toolkit', desc: 'Merge, split, extract pages, convert PDF to Word, Word to PDF and turn images into a PDF.', keys: 'merge split combine pages images document word docx convert', render: renderPdf },
-  { id: 'pdf-reader', group: 'Files', name: 'PDF audio reader', desc: 'Listen to any PDF document read out loud in your browser.', keys: 'pdf audio reader listen speech tts voice read book document', render: renderPdfReader },
+  { id: 'pdf-reader', group: 'Files', name: 'PDF audio reader', desc: 'Listen to any PDF read out loud, with a customizable voice, speed and pitch.', keys: 'pdf audio reader listen speech tts voice pitch read book document customize', render: renderPdfReader },
   { id: 'image', group: 'Files', name: 'Image toolkit', desc: 'Resize, compress and convert photos, or fit a size limit.', keys: 'photo jpg png webp compress resize kb', render: renderImage },
   { id: 'converter', group: 'Everyday', name: 'Converter', desc: 'Units, area, weight and currencies.', keys: 'unit length weight area currency dollar tola acre', render: renderConv },
   { id: 'planner', group: 'Everyday', name: 'Planner', desc: 'Daily tasks, habit streaks and a private journal.', keys: 'todo habit tracker diary notes', render: renderPlanner },
   { id: 'password', group: 'Everyday', name: 'Password generator', desc: 'Strong random passwords made on your device.', keys: 'secure random passphrase', render: renderPassword },
   { id: 'charts', group: 'Make', name: 'Graph & pie chart tool', desc: 'Generate custom bar, line and pie charts from your values.', keys: 'chart graph pie bar line statistics diagram visual', render: renderChartMaker },
-  { id: 'resume', group: 'Make', name: 'Resume builder', desc: 'Three clean templates and a text-based PDF.', keys: 'cv job career', render: renderResume },
+  { id: 'resume', group: 'Make', name: 'Resume builder', desc: 'Seven themes, an optional photo, and a quick-fill drafter for roles like intern, teacher or techie.', keys: 'cv job career resume photo picture theme ai generate intern teacher techie template', render: renderResume },
   { id: 'invoice', group: 'Make', name: 'Invoice generator', desc: 'GST invoices with totals, words and PDF download.', keys: 'gst bill billing freelance', render: renderInvoice },
   { id: 'qr', group: 'Make', name: 'QR and barcode', desc: 'Links, UPI payments, Wi-Fi and product barcodes.', keys: 'upi code scan barcode ean', render: renderQr }
 ];
@@ -2816,13 +3158,21 @@ function route() {
 function applyTheme(t) {
   if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
   const dark = t === 'dark' || (t !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-  $('#themeBtn').textContent = dark ? 'Switch to light theme' : 'Switch to dark theme';
+  const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+  $$('.bulbbtn').forEach(function (b) {
+    b.classList.toggle('lit', dark);
+    b.setAttribute('aria-label', label);
+  });
+  set('themeBtnLabel', dark ? 'Light mode' : 'Dark mode');
 }
 applyTheme(store.get('theme', null));
-$('#themeBtn').addEventListener('click', function () {
+function toggleTheme() {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
   const next = dark ? 'light' : 'dark'; store.set('theme', next); applyTheme(next);
-});
+}
+$('#themeBtn').addEventListener('click', toggleTheme);
+const themeBtnTop = $('#themeBtnTop');
+if (themeBtnTop) themeBtnTop.addEventListener('click', toggleTheme);
 
 /* nav interactions */
 $('#menuBtn').addEventListener('click', function () {
