@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Saral | Small tools for money, files and everyday work</title>
 <meta name="description" content="EMI, SIP, CAGR, age calculator, income tax, BMI, chart maker, PDF and image tools, converters, resume and invoice makers. Everything runs in your browser.">
+<meta name="theme-color" content="#F2A516">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Saral">
+<link rel="manifest" id="manifestLink" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -67,8 +73,11 @@ main:focus{outline:none}
 .bulbbtn .filament{stroke:var(--muted)}
 .bulbbtn.lit .bulb{fill:var(--accent);stroke:var(--accent-text)}
 .bulbbtn.lit .filament{stroke:var(--accent-text)}
-.topbar .bulbbtn{margin-left:auto;padding:8px;gap:0}
+.topbar .bulbbtn{padding:8px;gap:0}
 .topbar .bulbbtn span{display:none}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.navfoot-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.installbtn[hidden]{display:none}
 .topbar{display:none}
 .scrim{display:none}
 .main{padding:52px clamp(20px,5vw,72px) 110px;min-width:0;max-width:1180px;width:100%;height:auto}
@@ -353,9 +362,14 @@ select.in{appearance:auto}
       </svg>
       saral
     </a>
-    <button class="bulbbtn" id="themeBtnTop" type="button" aria-label="Switch to dark theme">
-      <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
-    </button>
+    <div class="topbar-actions">
+      <button class="bulbbtn installbtn" id="installBtnTop" type="button" aria-label="Install Saral app" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4.2-4.2M12 15l4.2-4.2"/><path d="M4.5 16.5V19a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
+      </button>
+      <button class="bulbbtn" id="themeBtnTop" type="button" aria-label="Switch to dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
+      </button>
+    </div>
   </header>
   <nav class="nav" id="nav" aria-label="Tools">
     <a class="brand" href="#/">
@@ -372,10 +386,16 @@ select.in{appearance:auto}
     <div class="search"><input id="q" type="search" placeholder="Find a tool" aria-label="Find a tool" autocomplete="off"></div>
     <div id="navList"></div>
     <div class="navfoot">
-      <button class="bulbbtn" id="themeBtn" type="button" aria-label="Switch to dark theme">
-        <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
-        <span id="themeBtnLabel">Dark mode</span>
-      </button>
+      <div class="navfoot-actions">
+        <button class="bulbbtn installbtn" id="installBtn" type="button" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4.2-4.2M12 15l4.2-4.2"/><path d="M4.5 16.5V19a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"/></svg>
+          <span>Install app</span>
+        </button>
+        <button class="bulbbtn" id="themeBtn" type="button" aria-label="Switch to dark theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bulb" d="M12 2.5a6.5 6.5 0 0 0-3.7 11.83c.56.4.95.84 1.18 1.28.2.4.32.86.32 1.34v.55a1 1 0 0 0 1 1h2.4a1 1 0 0 0 1-1v-.55c0-.48.12-.94.32-1.34.23-.44.62-.88 1.18-1.28A6.5 6.5 0 0 0 12 2.5Z"/><path class="filament" fill="none" d="M9.6 18.5h4.8M10.3 21h3.4"/></svg>
+          <span id="themeBtnLabel">Dark mode</span>
+        </button>
+      </div>
       <p>The website is developed by Bittu and designed by LR AWM CONNECT WITH ME  at  <a href="mailto:bittukumar15031987@gmail.com" class="linkbtn">bittukumar15031987@gmail.com</a></p>
     </div>
   </nav>
@@ -470,7 +490,87 @@ const downloadsReady = (async function () {
   try { if (window.claude && typeof window.claude.use === 'function') return await window.claude.use('downloads'); } catch (e) { }
   return null;
 })();
+/* watermarking: every PDF and image the user downloads is stamped with saralworks.in */
+const WATERMARK_TEXT = 'saralworks.in';
+async function stampPdfDoc(doc) {
+  await LIBS.pdf();
+  const PL = PDFLib;
+  const font = await doc.embedFont(PL.StandardFonts.HelveticaBold);
+  doc.getPages().forEach(function (page) {
+    const size = page.getSize(), w = size.width, h = size.height;
+    const big = Math.max(16, Math.min(w, h) * 0.05);
+    const tw = font.widthOfTextAtSize(WATERMARK_TEXT, big);
+    try {
+      page.drawText(WATERMARK_TEXT, {
+        x: w / 2 - (tw / 2) * Math.cos(Math.PI / 6), y: h / 2 - (tw / 2) * Math.sin(Math.PI / 6),
+        size: big, font: font, color: PL.rgb(0.55, 0.55, 0.58), opacity: 0.22, rotate: PL.degrees(30)
+      });
+    } catch (e) { }
+    const small = 8.5;
+    page.drawText(WATERMARK_TEXT, { x: 14, y: 12, size: small, font: font, color: PL.rgb(0.4, 0.4, 0.45), opacity: 0.7 });
+  });
+}
+async function watermarkPdfBytes(bytes) {
+  try {
+    await LIBS.pdf();
+    const src = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    const doc = await PDFLib.PDFDocument.load(src, { ignoreEncryption: true });
+    await stampPdfDoc(doc);
+    return await doc.save();
+  } catch (e) { return bytes; }
+}
+async function loadBitmapFromBlob(blob) {
+  if (window.createImageBitmap) { try { return await createImageBitmap(blob); } catch (e) { } }
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise(function (res, rej) {
+      const im = new Image(); im.onload = function () { res(im); }; im.onerror = rej; im.src = url;
+    });
+    return img;
+  } finally { URL.revokeObjectURL(url); }
+}
+async function watermarkImageBlob(blob, outMime) {
+  try {
+    const mime = outMime || blob.type || 'image/png';
+    const bmp = await loadBitmapFromBlob(blob);
+    const w = bmp.width || bmp.naturalWidth, h = bmp.height || bmp.naturalHeight;
+    if (!w || !h) return blob;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d');
+    if (mime === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(bmp, 0, 0, w, h);
+    const fontSize = Math.max(11, Math.round(Math.min(w, h) * 0.032));
+    ctx.font = '700 ' + fontSize + 'px Arial, sans-serif';
+    ctx.textBaseline = 'alphabetic';
+    const pad = Math.round(fontSize * 0.55);
+    const tw = ctx.measureText(WATERMARK_TEXT).width;
+    ctx.globalAlpha = 0.38;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(w - tw - pad * 2.4, h - fontSize - pad * 1.8, tw + pad * 2.4, fontSize + pad * 1.8);
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(WATERMARK_TEXT, w - tw - pad * 1.2, h - pad * 0.7);
+    ctx.globalAlpha = 1;
+    const quality = mime === 'image/png' ? undefined : 0.92;
+    const out = await new Promise(function (res) { cv.toBlob(res, mime, quality); });
+    return out || blob;
+  } catch (e) { return blob; }
+}
+async function applyWatermark(name, data, mime) {
+  const ext = (String(name).match(/\.([a-z0-9]+)$/i) || [, ''])[1].toLowerCase();
+  const effMime = mime || (data && data.type) || '';
+  if (ext === 'pdf' || effMime === 'application/pdf') {
+    const bytes = data instanceof Blob ? new Uint8Array(await data.arrayBuffer()) : data;
+    return await watermarkPdfBytes(bytes);
+  }
+  if (/^image\//.test(effMime) || /\.(png|jpe?g|webp)$/i.test(String(name))) {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: effMime || 'image/png' });
+    return await watermarkImageBlob(blob, effMime || blob.type);
+  }
+  return data;
+}
 async function saveFile(name, data, mime) {
+  try { data = await applyWatermark(name, data, mime); } catch (e) { }
   const ns = await downloadsReady;
   if (ns) {
     try { await ns.save({ filename: name, data: data }); toast('Saved ' + name); }
@@ -1267,7 +1367,6 @@ function renderBmi(el) {
 /* 8. Graph & Pie Chart */
 const chartState = {
   type: 'pie',
-  style: '2d',
   title: 'Monthly Expenses',
   items: [
     { label: 'Housing', val: 24000, color: '#F2A516' },
@@ -1278,384 +1377,10 @@ const chartState = {
   ]
 };
 
-/* shared canvas helpers for the elegant chart renderer */
-function chHexToRgb(hex) {
-  const h = (hex || '#12172B').replace('#', '');
-  const v = h.length === 3 ? h.split('').map(function (c) { return c + c; }).join('') : h;
-  const n = parseInt(v, 16) || 0;
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-function chShade(hex, pct) {
-  const c = chHexToRgb(hex);
-  const f = function (ch) { return Math.max(0, Math.min(255, Math.round(ch + (pct > 0 ? (255 - ch) : ch) * pct))); };
-  return 'rgb(' + f(c.r) + ',' + f(c.g) + ',' + f(c.b) + ')';
-}
-function chRoundRect(ctx, x, y, w, h, r) {
-  const rr = Math.max(0, Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2));
-  ctx.beginPath();
-  ctx.moveTo(x + rr, y);
-  ctx.arcTo(x + w, y, x + w, y + h, rr);
-  ctx.arcTo(x + w, y + h, x, y + h, rr);
-  ctx.arcTo(x, y + h, x, y, rr);
-  ctx.arcTo(x, y, x + w, y, rr);
-  ctx.closePath();
-}
-function chBarTopRoundPath(ctx, x, y, w, h, r) {
-  const rr = Math.max(0, Math.min(r, w / 2, h));
-  ctx.beginPath();
-  ctx.moveTo(x, y + h);
-  ctx.lineTo(x, y + rr);
-  ctx.arcTo(x, y, x + rr, y, rr);
-  ctx.lineTo(x + w - rr, y);
-  ctx.arcTo(x + w, y, x + w, y + rr, rr);
-  ctx.lineTo(x + w, y + h);
-  ctx.closePath();
-}
-function chAxisGrid(ctx, padL, padT, padR, ch, W, max) {
-  ctx.strokeStyle = '#EEF0F5'; ctx.lineWidth = 1; ctx.font = '11px system-ui, sans-serif'; ctx.fillStyle = '#B4B9C9'; ctx.textAlign = 'right';
-  const ticks = 4;
-  for (let i = 0; i <= ticks; i++) {
-    const y = padT + ch - (ch / ticks) * i;
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    ctx.fillText(Math.round((max / ticks) * i).toLocaleString('en-IN'), padL - 10, y + 4);
-  }
-}
-function chLegend(ctx, W, valid, total, startY) {
-  let ly = startY;
-  ctx.textAlign = 'left';
-  valid.forEach(function (d) {
-    chRoundRect(ctx, W - 200, ly - 11, 13, 13, 4);
-    ctx.fillStyle = d.color; ctx.fill();
-    ctx.fillStyle = '#12172B'; ctx.font = '600 12.5px "Bricolage Grotesque", system-ui, sans-serif';
-    ctx.fillText(d.label, W - 180, ly);
-    ctx.fillStyle = '#9BA1B9'; ctx.font = '11.5px system-ui, sans-serif';
-    const pct = total ? ((d.val / total) * 100).toFixed(1) + '%' : '';
-    ctx.fillText(d.val.toLocaleString('en-IN') + (pct ? '  ·  ' + pct : ''), W - 180, ly + 14);
-    ly += 34;
-  });
-}
-
-function chDrawPie2D(ctx, W, H, valid, total) {
-  const cx = W / 2 - 90, cy = H / 2 + 16, r = 138, holeR = r * 0.58;
-  ctx.save();
-  ctx.shadowColor = 'rgba(18,23,43,.18)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 8;
-  let start = -Math.PI / 2;
-  valid.forEach(function (d) {
-    const slice = (d.val / total) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, start + slice);
-    ctx.closePath();
-    const grad = ctx.createRadialGradient(cx, cy, holeR, cx, cy, r);
-    grad.addColorStop(0, chShade(d.color, 0.18));
-    grad.addColorStop(1, d.color);
-    ctx.fillStyle = grad;
-    ctx.fill();
-    start += slice;
-  });
-  ctx.restore();
-
-  start = -Math.PI / 2;
-  ctx.lineWidth = 3; ctx.strokeStyle = '#fff';
-  valid.forEach(function (d) {
-    const slice = (d.val / total) * Math.PI * 2;
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(start) * r, cy + Math.sin(start) * r); ctx.stroke();
-    start += slice;
-  });
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx, cy, holeR, 0, Math.PI * 2); ctx.fillStyle = '#FFFFFF'; ctx.fill();
-
-  start = -Math.PI / 2;
-  ctx.textAlign = 'center'; ctx.font = '600 12px system-ui, sans-serif';
-  valid.forEach(function (d) {
-    const slice = (d.val / total) * Math.PI * 2, pct = d.val / total;
-    if (pct > 0.06) {
-      const mid = start + slice / 2, lr = (r + holeR) / 2;
-      ctx.fillStyle = '#fff';
-      ctx.fillText(Math.round(pct * 100) + '%', cx + Math.cos(mid) * lr, cy + Math.sin(mid) * lr + 4);
-    }
-    start += slice;
-  });
-
-  ctx.fillStyle = '#12172B'; ctx.font = '700 15px "Bricolage Grotesque", system-ui, sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText(String(valid.length), cx, cy - 2);
-  ctx.fillStyle = '#9BA1B9'; ctx.font = '11px system-ui, sans-serif';
-  ctx.fillText(valid.length === 1 ? 'segment' : 'segments', cx, cy + 14);
-
-  chLegend(ctx, W, valid, total, cy - (valid.length * 13));
-}
-
-function chDrawPie3D(ctx, W, H, valid, total) {
-  const cx = W / 2 - 90, cy = H / 2 - 8, rx = 148, ry = 80, depth = 34;
-  const segs = []; let start = -Math.PI / 2;
-  valid.forEach(function (d) {
-    const slice = (d.val / total) * Math.PI * 2;
-    segs.push({ d: d, a0: start, a1: start + slice });
-    start += slice;
-  });
-  function norm(a) { let x = a % (Math.PI * 2); if (x < 0) x += Math.PI * 2; return x; }
-
-  const STEP = 0.035;
-  segs.forEach(function (seg) {
-    const wall = chShade(seg.d.color, -0.28);
-    let a = seg.a0;
-    while (a < seg.a1) {
-      const a2 = Math.min(a + STEP, seg.a1);
-      if (Math.sin(norm((a + a2) / 2)) > 0.02) {
-        const x1 = cx + Math.cos(a) * rx, y1 = cy + Math.sin(a) * ry;
-        const x2 = cx + Math.cos(a2) * rx, y2 = cy + Math.sin(a2) * ry;
-        ctx.beginPath();
-        ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x2, y2 + depth); ctx.lineTo(x1, y1 + depth);
-        ctx.closePath(); ctx.fillStyle = wall; ctx.fill();
-      }
-      a = a2;
-    }
-  });
-
-  segs.forEach(function (seg) {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.ellipse(cx, cy, rx, ry, 0, seg.a0, seg.a1);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(cx - rx, cy - ry, cx + rx, cy + ry);
-    grad.addColorStop(0, chShade(seg.d.color, 0.12));
-    grad.addColorStop(1, seg.d.color);
-    ctx.fillStyle = grad; ctx.fill();
-    ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke();
-  });
-
-  ctx.textAlign = 'center'; ctx.font = '600 12px system-ui, sans-serif'; ctx.fillStyle = '#fff';
-  segs.forEach(function (seg) {
-    const pct = seg.d.val / total;
-    if (pct > 0.06) {
-      const mid = (seg.a0 + seg.a1) / 2;
-      ctx.fillText(Math.round(pct * 100) + '%', cx + Math.cos(mid) * rx * 0.62, cy + Math.sin(mid) * ry * 0.62 + 4);
-    }
-  });
-
-  chLegend(ctx, W, valid, total, cy - (valid.length * 13) + depth / 2 + 12);
-}
-
-function chDrawBar2D(ctx, W, H, valid) {
-  const max = Math.max.apply(null, valid.map(function (d) { return d.val; })) * 1.15;
-  const padL = 60, padR = 30, padB = 74, padT = 90;
-  const ch = H - padB - padT, cw = W - padL - padR, bw = cw / valid.length;
-
-  chAxisGrid(ctx, padL, padT, padR, ch, W, max);
-  ctx.strokeStyle = '#D8DBE4'; ctx.beginPath(); ctx.moveTo(padL, padT + ch); ctx.lineTo(W - padR, padT + ch); ctx.stroke();
-
-  valid.forEach(function (d, i) {
-    const bhh = (d.val / max) * ch;
-    const bx = padL + i * bw + bw * 0.18, barW = bw * 0.64, by = padT + ch - bhh;
-
-    ctx.save();
-    ctx.shadowColor = 'rgba(18,23,43,.16)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
-    const grad = ctx.createLinearGradient(0, by, 0, by + bhh);
-    grad.addColorStop(0, chShade(d.color, 0.22));
-    grad.addColorStop(1, d.color);
-    ctx.fillStyle = grad;
-    chBarTopRoundPath(ctx, bx, by, barW, bhh, 8);
-    ctx.fill();
-    ctx.restore();
-
-    ctx.fillStyle = '#12172B'; ctx.font = '600 12.5px system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(d.val.toLocaleString('en-IN'), bx + barW / 2, by - 10);
-    ctx.fillStyle = '#5D6379'; ctx.font = '12px system-ui, sans-serif';
-    ctx.fillText(d.label, bx + barW / 2, padT + ch + 24);
-  });
-}
-
-function chDrawBar3D(ctx, W, H, valid) {
-  const max = Math.max.apply(null, valid.map(function (d) { return d.val; })) * 1.15;
-  const padL = 60, padR = 46, padB = 74, padT = 90;
-  const ch = H - padB - padT, cw = W - padL - padR, bw = cw / valid.length;
-  const depthX = 14, depthY = 10;
-
-  chAxisGrid(ctx, padL, padT, padR, ch, W, max);
-
-  valid.forEach(function (d, i) {
-    const bhh = (d.val / max) * ch;
-    const bx = padL + i * bw + bw * 0.2, barW = bw * 0.5, by = padT + ch - bhh, floorY = padT + ch;
-
-    ctx.beginPath();
-    ctx.moveTo(bx + barW, by);
-    ctx.lineTo(bx + barW + depthX, by - depthY);
-    ctx.lineTo(bx + barW + depthX, floorY - depthY);
-    ctx.lineTo(bx + barW, floorY);
-    ctx.closePath();
-    ctx.fillStyle = chShade(d.color, -0.25); ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(bx, by);
-    ctx.lineTo(bx + depthX, by - depthY);
-    ctx.lineTo(bx + barW + depthX, by - depthY);
-    ctx.lineTo(bx + barW, by);
-    ctx.closePath();
-    ctx.fillStyle = chShade(d.color, 0.28); ctx.fill();
-
-    const grad = ctx.createLinearGradient(0, by, 0, floorY);
-    grad.addColorStop(0, chShade(d.color, 0.1));
-    grad.addColorStop(1, d.color);
-    ctx.fillStyle = grad;
-    ctx.fillRect(bx, by, barW, bhh);
-
-    ctx.fillStyle = '#12172B'; ctx.font = '600 12.5px system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(d.val.toLocaleString('en-IN'), bx + barW / 2 + depthX / 2, by - depthY - 8);
-    ctx.fillStyle = '#5D6379'; ctx.font = '12px system-ui, sans-serif';
-    ctx.fillText(d.label, bx + barW / 2, floorY + 24);
-  });
-
-  ctx.strokeStyle = '#D8DBE4'; ctx.beginPath(); ctx.moveTo(padL, padT + ch); ctx.lineTo(W - padR, padT + ch); ctx.stroke();
-}
-
-function chLinePoints(valid, max, padL, padT, ch, cw) {
-  const step = cw / Math.max(1, valid.length - 1);
-  return valid.map(function (d, i) { return { x: padL + i * step, y: padT + ch - (d.val / max) * ch, d: d }; });
-}
-
-function chDrawLine2D(ctx, W, H, valid) {
-  const max = Math.max.apply(null, valid.map(function (d) { return d.val; })) * 1.15;
-  const padL = 60, padR = 30, padB = 74, padT = 90;
-  const ch = H - padB - padT, cw = W - padL - padR;
-  chAxisGrid(ctx, padL, padT, padR, ch, W, max);
-
-  const pts = chLinePoints(valid, max, padL, padT, ch, cw);
-  function smoothPath() {
-    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 0; i < pts.length - 1; i++) {
-      const mx = (pts[i].x + pts[i + 1].x) / 2, my = (pts[i].y + pts[i + 1].y) / 2;
-      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
-    }
-    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
-  }
-
-  smoothPath();
-  ctx.lineTo(pts[pts.length - 1].x, padT + ch);
-  ctx.lineTo(pts[0].x, padT + ch);
-  ctx.closePath();
-  const areaGrad = ctx.createLinearGradient(0, padT, 0, padT + ch);
-  areaGrad.addColorStop(0, 'rgba(242,165,22,.28)');
-  areaGrad.addColorStop(1, 'rgba(242,165,22,0)');
-  ctx.fillStyle = areaGrad; ctx.fill();
-
-  ctx.save();
-  ctx.shadowColor = 'rgba(18,23,43,.18)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
-  smoothPath();
-  ctx.strokeStyle = '#12172B'; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
-  ctx.restore();
-
-  pts.forEach(function (p) {
-    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = p.d.color; ctx.fill();
-    ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke();
-
-    ctx.fillStyle = '#12172B'; ctx.font = '600 12px system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(String(p.d.val), p.x, p.y - 14);
-    ctx.fillStyle = '#5D6379'; ctx.font = '12px system-ui, sans-serif';
-    ctx.fillText(p.d.label, p.x, padT + ch + 24);
-  });
-
-  ctx.strokeStyle = '#D8DBE4'; ctx.beginPath(); ctx.moveTo(padL, padT + ch); ctx.lineTo(W - padR, padT + ch); ctx.stroke();
-}
-
-function chDrawLine3D(ctx, W, H, valid) {
-  const max = Math.max.apply(null, valid.map(function (d) { return d.val; })) * 1.15;
-  const padL = 60, padR = 46, padB = 74, padT = 90;
-  const ch = H - padB - padT, cw = W - padL - padR;
-  const depthX = 16, depthY = 12;
-  chAxisGrid(ctx, padL, padT, padR, ch, W, max);
-
-  const pts = chLinePoints(valid, max, padL, padT, ch, cw);
-
-  for (let i = 0; i < pts.length - 1; i++) {
-    ctx.beginPath();
-    ctx.moveTo(pts[i].x, pts[i].y);
-    ctx.lineTo(pts[i + 1].x, pts[i + 1].y);
-    ctx.lineTo(pts[i + 1].x + depthX, pts[i + 1].y - depthY);
-    ctx.lineTo(pts[i].x + depthX, pts[i].y - depthY);
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(pts[i].x, pts[i].y, pts[i].x + depthX, pts[i].y - depthY);
-    grad.addColorStop(0, chShade(pts[i].d.color, -0.1));
-    grad.addColorStop(1, chShade(pts[i].d.color, 0.25));
-    ctx.fillStyle = grad; ctx.fill();
-  }
-
-  pts.forEach(function (p) {
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-    ctx.lineTo(p.x, padT + ch);
-    ctx.lineTo(p.x + depthX, padT + ch - depthY);
-    ctx.lineTo(p.x + depthX, p.y - depthY);
-    ctx.closePath();
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = chShade(p.d.color, -0.32);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-
-  ctx.beginPath();
-  pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
-  ctx.strokeStyle = '#12172B'; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
-
-  pts.forEach(function (p) {
-    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = p.d.color; ctx.fill();
-    ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke();
-
-    ctx.fillStyle = '#12172B'; ctx.font = '600 12px system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(String(p.d.val), p.x + depthX / 2, p.y - depthY - 10);
-    ctx.fillStyle = '#5D6379'; ctx.font = '12px system-ui, sans-serif';
-    ctx.fillText(p.d.label, p.x, padT + ch + 24);
-  });
-
-  ctx.strokeStyle = '#D8DBE4'; ctx.beginPath(); ctx.moveTo(padL, padT + ch); ctx.lineTo(W - padR, padT + ch); ctx.stroke();
-}
-
-const CH_BASE_W = 720, CH_BASE_H = 500;
-function chRenderChart(ctx, W, H, s) {
-  const scale = W / CH_BASE_W;
-  ctx.save();
-  ctx.clearRect(0, 0, W, H);
-  ctx.scale(scale, scale);
-  const bw = CH_BASE_W, bh = CH_BASE_H;
-
-  const bgGrad = ctx.createLinearGradient(0, 0, 0, bh);
-  bgGrad.addColorStop(0, '#FFFFFF');
-  bgGrad.addColorStop(1, '#F7F8FB');
-  ctx.fillStyle = bgGrad;
-  chRoundRect(ctx, 0, 0, bw, bh, 18); ctx.fill();
-  ctx.strokeStyle = '#E7E9EF'; ctx.lineWidth = 1;
-  chRoundRect(ctx, 0.5, 0.5, bw - 1, bh - 1, 18); ctx.stroke();
-
-  ctx.fillStyle = '#12172B';
-  ctx.font = '700 22px "Bricolage Grotesque", system-ui, sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-  ctx.fillText(s.title || 'Chart', bw / 2, 42);
-
-  const valid = s.items.filter(function (it) { return it.val > 0; });
-  const total = valid.reduce(function (a, b) { return a + b.val; }, 0);
-
-  ctx.font = '12px system-ui, sans-serif'; ctx.fillStyle = '#9BA1B9';
-  ctx.fillText('Total ' + total.toLocaleString('en-IN') + ' · ' + (s.style === '3d' ? '3D' : '2D') + ' ' + s.type, bw / 2, 62);
-
-  if (!valid.length || total <= 0) {
-    ctx.fillStyle = '#9BA1B9'; ctx.font = '16px system-ui, sans-serif';
-    ctx.fillText('Enter positive values to render the chart', bw / 2, bh / 2);
-    ctx.restore();
-    return;
-  }
-
-  if (s.type === 'pie') { (s.style === '3d' ? chDrawPie3D : chDrawPie2D)(ctx, bw, bh, valid, total); }
-  else if (s.type === 'bar') { (s.style === '3d' ? chDrawBar3D : chDrawBar2D)(ctx, bw, bh, valid); }
-  else if (s.type === 'line') { (s.style === '3d' ? chDrawLine3D : chDrawLine2D)(ctx, bw, bh, valid); }
-  ctx.restore();
-}
-
 function renderChartMaker(el) {
   const s = chartState;
-  el.innerHTML = head('Graph & pie chart tool', 'Put in your values, choose your style and instantly generate elegant bar, line or pie charts, in flat 2D or an extruded 3D look, with high-resolution image export.') +
+  el.innerHTML = head('Graph & pie chart tool', 'Put in your values, choose your style and instantly generate clean bar, line or pie charts with high-resolution image export.') +
     seg('ctype', [['pie', 'Pie chart'], ['bar', 'Bar graph'], ['line', 'Line graph']], s.type) +
-    '<div style="margin-top:10px">' + seg('cstyle', [['2d', '2D · flat'], ['3d', '3D · extruded']], s.style) + '</div>' +
     '<div class="calc" style="margin-top:26px"><div class="inputs">' +
     fld('Chart title', 'title', s.title) +
     '<div style="margin:20px 0 10px;display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:1.02rem;margin:0">Data points</h3>' +
@@ -1663,13 +1388,11 @@ function renderChartMaker(el) {
     '<div id="citems"></div>' +
     '</div><div class="panel stick">' +
     '<div class="imgprev" style="background:var(--surface);min-height:300px"><canvas id="cCanvas" width="720" height="500" style="width:100%;height:auto;max-height:380px;display:block"></canvas></div>' +
-    '<div class="btnrow"><button class="btn" id="cdl2d" type="button">Download 2D (PNG)</button><button class="btn ghost" id="cdl3d" type="button">Download 3D (PNG)</button></div>' +
-    '<p class="note" style="margin-top:10px">Both buttons work regardless of which style you\'re previewing above - Download 2D always saves the flat version, Download 3D always saves the extruded version, both at high resolution.</p>' +
+    '<div class="btnrow"><button class="btn" id="cdl" type="button">Download chart (PNG)</button></div>' +
     '</div></div>';
 
   bindPaths(el, s, function () { drawPreview(); });
   onSeg(el, 'ctype', function (v) { s.type = v; drawPreview(); });
-  onSeg(el, 'cstyle', function (v) { s.style = v; drawPreview(); });
 
   $('#cadd', el).onclick = function () {
     const palette = ['#F2A516', '#1B7F4B', '#12172B', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
@@ -1707,23 +1430,111 @@ function renderChartMaker(el) {
 
   function drawPreview() {
     const cv = $('#cCanvas', el); if (!cv) return;
-    cv.width = CH_BASE_W; cv.height = CH_BASE_H;
-    chRenderChart(cv.getContext('2d'), CH_BASE_W, CH_BASE_H, s);
+    const ctx = cv.getContext('2d');
+    const W = cv.width = 720, H = cv.height = 500;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillStyle = '#12172B';
+    ctx.font = 'bold 22px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.title || 'Chart', W / 2, 40);
+
+    const valid = s.items.filter(function (it) { return it.val > 0; });
+    const total = valid.reduce(function (a, b) { return a + b.val; }, 0);
+
+    if (!valid.length || total <= 0) {
+      ctx.fillStyle = '#9BA1B9'; ctx.font = '16px system-ui';
+      ctx.fillText('Enter positive values to render the chart', W / 2, H / 2);
+      return;
+    }
+
+    if (s.type === 'pie') {
+      const cx = W / 2 - 80, cy = H / 2 + 10, r = 160;
+      let start = -Math.PI / 2;
+      valid.forEach(function (d) {
+        const slice = (d.val / total) * (Math.PI * 2);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, start + slice);
+        ctx.closePath();
+        ctx.fillStyle = d.color;
+        ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+        start += slice;
+      });
+
+      let ly = cy - (valid.length * 12);
+      ctx.textAlign = 'left';
+      valid.forEach(function (d) {
+        ctx.fillStyle = d.color;
+        ctx.fillRect(W - 200, ly - 10, 14, 14);
+        ctx.fillStyle = '#12172B';
+        ctx.font = '13px system-ui, sans-serif';
+        const pct = ((d.val / total) * 100).toFixed(1) + '%';
+        ctx.fillText(d.label + ' (' + pct + ')', W - 178, ly + 2);
+        ly += 26;
+      });
+    } else if (s.type === 'bar') {
+      const max = Math.max.apply(null, valid.map(function (d) { return d.val; }));
+      const padL = 70, padR = 40, padB = 80, padT = 70;
+      const ch = H - padB - padT, cw = W - padL - padR;
+      const bw = cw / valid.length;
+
+      ctx.strokeStyle = '#E2E5EC'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+      valid.forEach(function (d, i) {
+        const bh = (d.val / max) * ch;
+        const bx = padL + i * bw + bw * 0.15;
+        const barW = bw * 0.7;
+        const by = H - padB - bh;
+        ctx.fillStyle = d.color;
+        ctx.fillRect(bx, by, barW, bh);
+
+        ctx.fillStyle = '#12172B'; ctx.font = '12px system-ui'; ctx.textAlign = 'center';
+        ctx.fillText(String(d.val), bx + barW / 2, by - 8);
+        ctx.fillStyle = '#5D6379';
+        ctx.fillText(d.label, bx + barW / 2, H - padB + 20);
+      });
+    } else if (s.type === 'line') {
+      const max = Math.max.apply(null, valid.map(function (d) { return d.val; }));
+      const padL = 70, padR = 40, padB = 80, padT = 70;
+      const ch = H - padB - padT, cw = W - padL - padR;
+
+      ctx.strokeStyle = '#E2E5EC'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
+
+      const step = cw / Math.max(1, valid.length - 1);
+      ctx.strokeStyle = '#12172B'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      valid.forEach(function (d, i) {
+        const px = padL + i * step;
+        const py = H - padB - (d.val / max) * ch;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      valid.forEach(function (d, i) {
+        const px = padL + i * step;
+        const py = H - padB - (d.val / max) * ch;
+        ctx.fillStyle = d.color; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.fillStyle = '#12172B'; ctx.font = '12px system-ui'; ctx.textAlign = 'center';
+        ctx.fillText(String(d.val), px, py - 12);
+        ctx.fillStyle = '#5D6379';
+        ctx.fillText(d.label, px, H - padB + 20);
+      });
+    }
   }
 
-  function exportChart(styleOverride) {
-    const s2 = Object.assign({}, s, { style: styleOverride });
-    const off = document.createElement('canvas');
-    off.width = CH_BASE_W * 2; off.height = CH_BASE_H * 2;
-    chRenderChart(off.getContext('2d'), off.width, off.height, s2);
-    off.toBlob(function (blob) {
-      const suffix = styleOverride === '3d' ? '-3d' : '-2d';
-      saveFile((s.title || 'chart').toLowerCase().replace(/\s+/g, '-') + suffix + '.png', blob);
-    }, 'image/png');
-  }
-
-  $('#cdl2d', el).onclick = function () { exportChart('2d'); };
-  $('#cdl3d', el).onclick = function () { exportChart('3d'); };
+  $('#cdl', el).onclick = function () {
+    const cv = $('#cCanvas', el);
+    if (cv) cv.toBlob(function (blob) { saveFile((s.title || 'chart').toLowerCase().replace(/\s+/g, '-') + '.png', blob); }, 'image/png');
+  };
 
   drawList();
   drawPreview();
@@ -1900,6 +1711,7 @@ function renderPdf(el) {
       if (!bodyXml) {
         bodyXml = '<w:p><w:r><w:t>(No extractable text found in this PDF)</w:t></w:r></w:p>';
       }
+      bodyXml += '<w:p><w:r><w:rPr><w:color w:val="9A9FB3"/><w:sz w:val="16"/></w:rPr><w:t xml:space="preserve">' + esc(WATERMARK_TEXT) + '</w:t></w:r></w:p>';
 
       const zip = new JSZip();
       zip.file('[Content_Types].xml',
@@ -2003,6 +1815,7 @@ function renderPdf(el) {
           const zip = new JSZip();
           for (let i = 0; i < total; i++) {
             const d = await PD.create(); const [p] = await d.copyPages(src, [i]); d.addPage(p);
+            await stampPdfDoc(d);
             zip.file(baseName(f.name) + '-page-' + (i + 1) + '.pdf', await d.save());
           }
           await saveFile(baseName(f.name) + '-pages.zip', await zip.generateAsync({ type: 'blob' }), 'application/zip');
@@ -3596,7 +3409,7 @@ const TOOLS = [
   { id: 'converter', group: 'Everyday', icon: '\ud83d\udd01', name: 'Converter', desc: 'Units, area, weight and currencies.', keys: 'unit length weight area currency dollar tola acre', render: renderConv },
   { id: 'planner', group: 'Everyday', icon: '\ud83d\uddd2\ufe0f', name: 'Planner', desc: 'Daily tasks, habit streaks and a private journal.', keys: 'todo habit tracker diary notes', render: renderPlanner },
   { id: 'password', group: 'Everyday', icon: '\ud83d\udd10', name: 'Password generator', desc: 'Strong random passwords made on your device.', keys: 'secure random passphrase', render: renderPassword },
-  { id: 'charts', group: 'Make', icon: '\ud83d\udcc9', name: 'Graph & pie chart tool', desc: 'Elegant bar, line and pie charts in flat 2D or extruded 3D, downloadable as high-res PNGs.', keys: 'chart graph pie bar line statistics diagram visual 3d', render: renderChartMaker },
+  { id: 'charts', group: 'Make', icon: '\ud83d\udcc9', name: 'Graph & pie chart tool', desc: 'Generate custom bar, line and pie charts from your values.', keys: 'chart graph pie bar line statistics diagram visual', render: renderChartMaker },
   { id: 'resume', group: 'Make', icon: '\ud83e\uddd1\u200d\ud83d\udcbc', name: 'Resume builder', desc: 'Seven themes, an optional photo, and a quick-fill drafter for roles like intern, teacher or techie.', keys: 'cv job career resume photo picture theme ai generate intern teacher techie template', render: renderResume },
   { id: 'invoice', group: 'Make', icon: '\ud83e\uddee', name: 'Invoice generator', desc: 'GST invoices with totals, words and PDF download.', keys: 'gst bill billing freelance', render: renderInvoice },
   { id: 'qr', group: 'Make', icon: '\ud83d\udd33', name: 'QR and barcode', desc: 'Links, UPI payments, Wi-Fi and product barcodes.', keys: 'upi code scan barcode ean', render: renderQr }
@@ -3669,7 +3482,7 @@ function applyTheme(t) {
   if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
   const dark = t === 'dark' || (t !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
-  $$('.bulbbtn').forEach(function (b) {
+  $$('.bulbbtn:not(.installbtn)').forEach(function (b) {
     b.classList.toggle('lit', dark);
     b.setAttribute('aria-label', label);
   });
@@ -3683,6 +3496,79 @@ function toggleTheme() {
 $('#themeBtn').addEventListener('click', toggleTheme);
 const themeBtnTop = $('#themeBtnTop');
 if (themeBtnTop) themeBtnTop.addEventListener('click', toggleTheme);
+
+/* Install app (Add to Home Screen) */
+(function () {
+  const installBtns = $$('.installbtn');
+  if (!installBtns.length) return;
+  let deferredPrompt = null;
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (ua.indexOf('Macintosh') >= 0 && 'ontouchend' in document);
+  const isStandalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+
+  function showBtns(show) { installBtns.forEach(function (b) { b.hidden = !show; }); }
+
+  if (!isStandalone) {
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      showBtns(true);
+    });
+    if (isIOS) showBtns(true); // iOS never fires beforeinstallprompt; offer manual steps instead
+  }
+  window.addEventListener('appinstalled', function () {
+    deferredPrompt = null; showBtns(false); toast('Saral installed on this device');
+  });
+
+  installBtns.forEach(function (b) {
+    b.addEventListener('click', async function () {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        try { await deferredPrompt.userChoice; } catch (e) { }
+        deferredPrompt = null;
+        showBtns(false);
+        return;
+      }
+      if (isIOS) toast('Tap the Share icon, then "Add to Home Screen".');
+      else toast('Open your browser menu and choose "Install app" or "Add to Home Screen".');
+    });
+  });
+
+  /* Best-effort manifest + service worker so Chrome/Edge/Android treat this as an installable app. */
+  try {
+    const mkIcon = function (size) {
+      const c = document.createElement('canvas'); c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#F6F0E4'; ctx.fillRect(0, 0, size, size);
+      const cx = size / 2, cy = size / 2;
+      ctx.beginPath(); ctx.arc(cx, cy, size * 0.4, 0, Math.PI * 2); ctx.fillStyle = '#EFA013'; ctx.fill();
+      ctx.lineWidth = size * 0.03; ctx.strokeStyle = '#1C1F3B'; ctx.stroke();
+      return c.toDataURL('image/png');
+    };
+    const manifest = {
+      name: 'Saral - Small tools for money, files and everyday work',
+      short_name: 'Saral',
+      start_url: location.pathname + location.search,
+      scope: location.pathname,
+      display: 'standalone',
+      background_color: '#F6F7F9',
+      theme_color: '#F2A516',
+      icons: [
+        { src: mkIcon(192), sizes: '192x192', type: 'image/png' },
+        { src: mkIcon(512), sizes: '512x512', type: 'image/png' }
+      ]
+    };
+    const link = document.getElementById('manifestLink');
+    if (link) link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
+  } catch (e) { }
+  try {
+    if ('serviceWorker' in navigator) {
+      const swSrc = "self.addEventListener('install',function(e){self.skipWaiting();});self.addEventListener('activate',function(e){self.clients.claim();});self.addEventListener('fetch',function(e){});";
+      const swUrl = URL.createObjectURL(new Blob([swSrc], { type: 'application/javascript' }));
+      navigator.serviceWorker.register(swUrl).catch(function () { });
+    }
+  } catch (e) { }
+})();
 
 /* nav interactions */
 $('#menuBtn').addEventListener('click', function () {
